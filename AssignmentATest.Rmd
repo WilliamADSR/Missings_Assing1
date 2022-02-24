@@ -239,7 +239,7 @@ catDif <- function(x, y) {
   mVar = is.na(x)
   table = table(y, mVar)
   diff = chisq.test(table(y, mVar))
-  return(list(table, diff))
+  return(diff)
 }
 
 
@@ -274,6 +274,44 @@ data3["mSmoke"] = is.na(data0$smoke)
 
 ## Looking for the missingness
 
+```{r}
+# Doing t-test to calculate whether the difference of the mean in the observed and true dataset is different
+
+outW <- meanDif(data0$weight, data1$weight) 
+tOutW <- round(outW$statistic, 3) 
+pOutW <- round(outW$p.value, 3) 
+
+outH <- meanDif(data0$height, data1$height)
+tOutH <- round(outH$statistic, 3)
+pOutH <- round(outH$p.value, 3)
+
+outB <- meanDif(data0$bmi, data1$bmi)
+tOutB <- round(outB$statistic, 3)
+pOutB <- round(outB$p.value, 3)
+
+outA <- meanDif(data0$active, data1$active)
+tOutA <- round(outA$statistic, 3)
+pOutA <- round(outA$p.value, 3)
+
+outS <- catDif(data0$smoke, data1$smoke)
+cOutS <- round(outS$statistic, 3)
+pOutS <- round(outS$p.value, 3)
+
+```
+
+weight: $t =$ `r tOutW`, $p =$ `r pOutW`
+
+height: $t =$ `r tOutH`, $p =$ `r pOutH`
+
+bmi: $t =$ `r tOutB`, $p =$ `r pOutB`
+
+active: $t =$ `r tOutA`, $p =$ `r pOutA`
+
+smoke: $x^2 =$ `r cOutS`, $p =$ `r pOutS`
+
+
+
+
 ```{r mnar-plot, fig.cap="comparing the distribution of the observed and true dataset"}
 mnar1 <- ggplot(data2, aes(x=weight)) +
   geom_histogram(bins = 20, color = "black", fill = "white") +
@@ -295,6 +333,73 @@ ggarrange(mnar1, mnar2, mnar3, mnar4,
 
 
 ## Missingness of weight{#missW}
+
+```{r}
+mWeightMale <- data3 %>% 
+  filter(sex == "male") %>% 
+  pull(mWeight)
+
+mWeightFemale <- data3 %>% 
+  filter(sex == "female") %>% 
+  pull(mWeight)
+
+mWeightSmoke <- data3 %>% 
+  filter(smoke == "yes") %>% 
+  pull(mWeight)
+
+mWeightNosmoke <- data3 %>% 
+  filter(smoke == "no") %>% 
+  pull(mWeight)
+
+outW1 <- catDif(data3$weight, data3$sex)
+cOutW1 <- round(outW1$statistic, 3)
+pOutW1 <- round(outW1$p.value, 3)
+
+outW2 <- catDif(data3$weight, data3$smoke)
+cOutW2 <- round(outW2$statistic, 3)
+pOutW2 <- round(outW2$p.value, 3) 
+
+outW3 <- catDif(data0$weight, data0$intensity)
+cOutW3 <- round(outW3$statistic, 3)
+pOutW3 <- round(outW3$p.value, 3)
+
+outW4 <- t.test(rest ~ mWeight, data = data3)
+tOutW4 <- round(outW4$statistic, 3)
+pOutW4 <- round(outW4$p.value, 3)
+
+outW5 <- t.test(age ~ mWeight, data = data3)
+tOutW5 <- round(outW5$statistic, 3)
+pOutW5 <- round(outW5$p.value, 3)
+
+outW6 <- t.test(height ~ mWeight, data = data3)
+tOutW6 <- round(outW6$statistic, 3)
+pOutW6 <- round(outW6$p.value, 3)
+
+outW7 <- t.test(bmi ~ mWeight, data = data3)
+tOutW7 <- round(outW7$statistic, 3)
+pOutW7 <- round(outW7$p.value, 3)
+
+outW8 <- t.test(active ~ mWeight, data = data3)
+tOutW8 <- round(outW8$statistic, 3)
+pOutW8 <- round(outW8$p.value, 3)
+
+```
+
+missing weight on sex: $x^2 =$ `r cOutW1`, $p =$ `r pOutW1`
+
+missing weight on smoke: $x^2 =$ `r cOutW2`, $p =$ `r pOutW2`
+
+missing weight on intensity: $x^2 =$ `r cOutW3`, $p =$ `r pOutW3`
+
+missing weight on rest: $t =$ `r tOutW4`, $p =$ `r pOutW4`
+
+missing weight on age: $t =$ `r tOutW5`, $p =$ `r pOutW5`
+
+missing weight on height: $t =$ `r tOutW6`, $p =$ `r pOutW6`
+
+missing weight on bmi: $t =$ `r tOutW7`, $p =$ `r pOutW7`
+
+missing weight on active: $t =$ `r tOutW8`, $p =$ `r pOutW8`
 
 
 ```{r mar-weight, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of weight is MAR"}
@@ -321,6 +426,50 @@ marWeight8
 
 ## Missingness of height{#missH}
 
+```{r}
+outH1 <- catDif(data3$height, data3$sex)
+cOutH1 <- round(outW1$statistic, 3)
+pOutH1 <- round(outW1$p.value, 3)
+
+outH2 <- catDif(data3$height, data3$smoke)
+cOutH2 <- round(outH2$statistic, 3)
+pOutH2 <- round(outH2$p.value, 3) 
+
+outH3 <- catDif(data0$height, data0$intensity)
+cOutH3 <- round(outH3$statistic, 3)
+pOutH3 <- round(outH3$p.value, 3)
+
+outH4 <- t.test(rest ~ mHeight, data = data3)
+tOutH4 <- round(outH4$statistic, 3)
+pOutH4 <- round(outH4$p.value, 3)
+
+outH5 <- t.test(age ~ mHeight, data = data3)
+tOutH5 <- round(outH5$statistic, 3)
+pOutH5 <- round(outH5$p.value, 3)
+
+outH6 <- t.test(bmi ~ mHeight, data = data3)
+tOutH6 <- round(outH6$statistic, 3)
+pOutH6 <- round(outH6$p.value, 3)
+
+outH7 <- t.test(active ~ mHeight, data = data3)
+tOutH7 <- round(outH7$statistic, 3)
+pOutH7 <- round(outH7$p.value, 3)
+```
+
+missing height on sex: $x^2 =$ `r cOutH1`, $p =$ `r pOutH1`
+
+missing height on smoke: $x^2 =$ `r cOutH2`, $p =$ `r pOutH2`
+
+missing height on intensity: $x^2 =$ `r cOutH3`, $p =$ `r pOutH3`
+
+missing height on rest: $t =$ `r tOutH4`, $p =$ `r pOutH4`
+
+missing height on age: $t =$ `r tOutH5`, $p =$ `r pOutH5`
+
+missing height on bmi: $t =$ `r tOutH6`, $p =$ `r pOutH6`
+
+missing height on active: $t =$ `r tOutH7`, $p =$ `r pOutH7`
+
 ```{r mar-height, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of height is MAR"}
 marHeight1 <- data3 %>% select(sex, height) %>% spineMiss()
 marHeight2 <- data3 %>% select(smoke, height) %>% spineMiss()
@@ -340,6 +489,59 @@ marHeight7
 ```
 
 ## Missingness of Active
+
+```{r}
+outA1 <- catDif(data3$active, data3$sex)
+cOutA1 <- round(outA1$statistic, 3)
+pOutA1 <- round(outA1$p.value, 3)
+
+outA2 <- catDif(data3$active, data3$smoke)
+cOutA2 <- round(outA2$statistic, 3)
+pOutA2 <- round(outA2$p.value, 3) 
+
+outA3 <- catDif(data0$active, data0$intensity)
+cOutA3 <- round(outA3$statistic, 3)
+pOutA3 <- round(outA3$p.value, 3)
+
+outA4 <- t.test(rest ~ mActive, data = data3)
+tOutA4 <- round(outA4$statistic, 3)
+pOutA4 <- round(outA4$p.value, 3)
+
+outA5 <- t.test(age ~ mActive, data = data3)
+tOutA5 <- round(outA5$statistic, 3)
+pOutA5 <- round(outA5$p.value, 3)
+
+outA6 <- t.test(height ~ mActive, data = data3)
+tOutA6 <- round(outA6$statistic, 3)
+pOutA6 <- round(outA6$p.value, 3)
+
+outA7 <- t.test(bmi ~ mActive, data = data3)
+tOutA7 <- round(outA7$statistic, 3)
+pOutA7 <- round(outA7$p.value, 3)
+
+outA8 <- t.test(weight ~ mActive, data = data3)
+tOutA8 <- round(outA8$statistic, 3)
+pOutA8 <- round(outA8$p.value, 3)
+```
+
+
+missing active on sex: $x^2 =$ `r cOutA1`, $p =$ `r pOutA1`
+
+missing active on smoke: $x^2 =$ `r cOutA2`, $p =$ `r pOutA2`
+
+missing active on intensity: $x^2 =$ `r cOutA3`, $p =$ `r pOutA3`
+
+missing active on rest: $t =$ `r tOutA4`, $p =$ `r pOutA4`
+
+missing active on age: $t =$ `r tOutA5`, $p =$ `r pOutA5`
+
+missing active on height: $t =$ `r tOutA6`, $p =$ `r pOutA6`
+
+missing active on bmi: $t =$ `r tOutA7`, $p =$ `r pOutA7`
+
+missing active on weight: $t =$ `r tOutA8`, $p =$ `r pOutA8`
+
+
 
 ```{r mar-active, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of active is MAR"}
 marActive1 <- data3 %>% select(sex, active) %>% spineMiss()
@@ -363,6 +565,51 @@ marActive8
 
 
 ## Missingness of Bmi{#missB}
+
+
+```{r}
+outB1 <- catDif(data3$bmi, data3$sex)
+cOutB1 <- round(outB1$statistic, 3)
+pOutB1 <- round(outB1$p.value, 3)
+
+outB2 <- catDif(data3$bmi, data3$smoke)
+cOutB2 <- round(outB2$statistic, 3)
+pOutB2 <- round(outB2$p.value, 3) 
+
+outB3 <- catDif(data3$bmi, data3$intensity)
+cOutB3 <- round(outB3$statistic, 3)
+pOutB3 <- round(outB3$p.value, 3)
+
+outB4 <- t.test(rest ~ mBmi, data = data3)
+tOutB4 <- round(outB4$statistic, 3)
+pOutB4 <- round(outB4$p.value, 3)
+
+outB5 <- t.test(age ~ mBmi, data = data3)
+tOutB5 <- round(outB5$statistic, 3)
+pOutB5 <- round(outB5$p.value, 3)
+
+outB6 <- t.test(height ~ mBmi, data = data3)
+tOutB6 <- round(outB6$statistic, 3)
+pOutB6 <- round(outB6$p.value, 3)
+
+outB7 <- t.test(active ~ mBmi, data = data3)
+tOutB7 <- round(outB7$statistic, 3)
+pOutB7 <- round(outB7$p.value, 3)
+```
+
+missing bmi on sex: $x^2 =$ `r cOutB1`, $p =$ `r pOutB1`
+
+missing bmi on smoke: $x^2 =$ `r cOutB2`, $p =$ `r pOutB2`
+
+missing bmi on intensity: $x^2 =$ `r cOutB3`, $p =$ `r pOutB3`
+
+missing bmi on rest: $t =$ `r tOutB4`, $p =$ `r pOutB4`
+
+missing bmi on age: $t =$ `r tOutB5`, $p =$ `r pOutB5`
+
+missing bmi on height: $t =$ `r tOutB6`, $p =$ `r pOutB6`
+
+missing bmi on active: $t =$ `r tOutB7`, $p =$ `r pOutB7`
 
 ```{r mar-bmi, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of bmi is MAR"}
 marBmi1 <- data3 %>% select(sex, bmi) %>% spineMiss()
