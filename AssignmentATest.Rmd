@@ -1,0 +1,411 @@
+---
+title: "Assignment A: Investigating the scope of the missingness problem"
+author: "Martijn Koster"
+date: "2/22/2022"
+output: 
+  bookdown::html_document2: default
+
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 28px;
+  }
+h1 { /* Header 1 */
+  font-size: 22px;
+  }
+h2 { /* Header 2 */
+    font-size: 18px;
+  }
+h3 { /* Header 3 */
+  font-size: 14px;
+  font-family: "Times New Roman", Times, serif;
+  }
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, comment = NA, warning = FALSE,
+                      error=FALSE, results='hide',fig.keep='all')
+```
+
+---
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+``` 
+
+---
+
+# Introduction{#intro}
+
+write introduction here 
+
+
+
+---
+
+```{r}
+data0 <- readRDS("~/Documents/Blok 3/Missing values/Assignments/incomplete_data_g1.rds") # load incomoplete
+data1 <- readRDS("~/Documents/Blok 3/Missing values/Assignments/complete_data.rds")
+```
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+library(knitr)
+library(kableExtra)
+``` 
+
+---
+
+# Observed vs True data{#data}
+
+In this section we will compare the observed with the true dataset. 
+
+```{r obsData, results='hold'}
+kbl(data0[1:5,], caption = "Observed Data") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+kbl(data1[1:5,], caption = "True Data") %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+
+## Descriptives{#data1}
+
+Obviously, neither the mean nor the variance of age, and rest changed since these has no missing values. 
+
+The mean of active is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
+
+The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
+
+The mean of weight is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 57% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
+
+The mean of bmi is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
+
+```{r, include = FALSE}
+colMeans(data0[c(1, 5:9)], na.rm =TRUE)
+colMeans(data1[c(1, 5:9)], na.rm =TRUE)
+sapply(data0[c(1, 5:9)], var, na.rm =TRUE)
+sapply(data1[c(1, 5:9)], var)
+```
+
+
+```{r}
+tab2 <- data.frame(
+  variables <- c("Age", "Active", "Rest", "Height", 
+                 "Weight", "Bmi"),
+  meanObs <-  c("38.52", "92.58", "69.83", "174.50",
+                "73.91", "24.11"),
+  meanTrue <- c("38.52", "93.13", "69.83", "173.99",
+                "73.58", "24.06"),
+  varObs <- c("149.73", "383.05", "120.78", "100.66",
+              "260.26", "12.91"),
+  varTrue <- c("149.73", "383.04", "120.78", "105.29",
+              "274.85", "13.38")
+)
+```
+
+
+```{r des, results='hold'}
+kbl(tab2, caption = "Means and variances in true and observed dataset",
+    col.names = c("Variables", "$M_{obs}$", "$M_{true}$", 
+                "var obs", "var true")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  footnote(
+    general_title = "Note.",
+    general = "obs = Observed Dataset, true = True Dataset")
+```
+
+Over here categorical data descriptions
+
+
+
+## Correlations{#data3}
+
+```{r corObs, results = 'show' }
+dataCor <- data0
+dataCor$smoke <- as.numeric(dataCor$smoke)
+dataCor$sex <- as.numeric(dataCor$sex)
+dataCor$intensity <- as.numeric(dataCor$intensity)
+cor1 <- cor(dataCor, use = "pairwise.complete.obs")
+
+kbl(cor1, caption = "Correlations of obsereved data") %>% 
+  kable_classic(full_width = FALSE, html_font = "Cambria" )
+
+
+```
+
+
+
+## Regression{#data4}
+
+```{r}
+fit1 <- lm(active ~ age + bmi*sex + smoke, data=data0)
+fit2 <- lm(active ~ age + bmi*sex + smoke, data=data1)
+coef1 <- round(fit1$coefficients, 3)
+coef2 <- round(fit2$coefficients, 3)
+
+
+tab3 <- data.frame(
+  #variables <- c("(constant)", "Age", "Bmi", "Sex", 
+   #              "Smoke", "Sex:Bmi"),
+  coefObs <-  coef1,
+  seObs <- c("14.34", "0.11", "0.55", "20.78",
+                "2.91", "0.88"),
+  pObs <- c("<.001***", "<.001***", ".003**", ".117",
+              ".580", ".199"),
+  coefTrue <- coef2,
+  seTrue <- c("9.03", "0.07", "0.35", "14.16",
+              "1.99", "0.60"),
+  pTrue <- c("<.001***", "<.001***", "<.001***", ".002**",
+              ".078", ".006**"))
+
+```
+
+```{r reg, results='hold'}
+
+kbl(tab3, caption = "Regression analysis of True and Observed Data",
+    col.names = c("$\\beta_{obs}$", "$SE_{obs}$", "$p_{obs}$",
+                 "$\\beta_{true}$", "$SE_{true}$", "$p_{true}$")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+
+---
+
+# Missingness{#miss}
+
+
+There are 540 missing values. 0 for age, 0 for sex, 0 for intensity, 0 for rest, 58 for smoke, 92 for height, 93 for bmi, 123 for active, and 174 for weight. moreover there are 132 completely observed rows, 15 rows with one missing value, 37 rows with two missing values, 52 rows with three missing values, 55 rows with four missing values, 15 rows with five missing values.
+
+```{r misspat, fig.cap = "pattern of the missingness", fig.show='hold', out.width = "50%"}
+md.pattern(data0)
+vis_miss(data0, cluster = TRUE)
+gg_miss_var(data0)
+gg_miss_case(data0)
+```
+
+---
+
+```{r, include = TRUE}
+for (i in data0$weight) {
+  if (is.na(data0$weight[i])) {
+    i = (data0$bmi*(data0$height/100)^2) 
+  }
+  else {
+    i = i
+  }
+  data0["weight"] = i
+}
+```
+
+--- 
+
+
+
+```{r}
+#Function to calculate the mean difference for numeric variables
+meanDif <- function(x, y) {
+  mVar <- is.na(x)
+  means = t.test(y ~ mVar)
+  return(means)
+}  
+
+# Function to calculate the chi square for categorical variables
+catDif <- function(x, y) {
+  mVar = is.na(x)
+  table = table(y, mVar)
+  diff = chisq.test(table(y, mVar))
+  return(list(table, diff))
+}
+
+
+# Function to visualize where the missing data is coming from
+plotMiss <- function(x, y, data, xlab, ylab) {
+  p <- ggplot(data,
+         aes(x = x,
+             y = y))+
+    labs(y = ylab, x = xlab) +
+    geom_miss_point()
+  return(p)
+}
+```
+
+
+```{r}
+data2 = data1
+data3 = data0
+data2["mWeight"] = is.na(data0$weight)
+data2["mHeight"] = is.na(data0$height)
+data2["mBmi"] = is.na(data0$bmi)
+data2["mActive"] = is.na(data0$active)
+data2["mSmoke"] = is.na(data0$smoke)
+data3["mWeight"] = is.na(data0$weight)
+data3["mHeight"] = is.na(data0$height)
+data3["mBmi"] = is.na(data0$bmi)
+data3["mActive"] = is.na(data0$active)
+data3["mSmoke"] = is.na(data0$smoke)
+```
+
+---
+
+## Looking for the missingness
+
+```{r mnar-plot, fig.cap="comparing the distribution of the observed and true dataset"}
+mnar1 <- ggplot(data2, aes(x=weight)) +
+  geom_histogram(bins = 20, color = "black", fill = "white") +
+  facet_grid(mWeight ~ .)
+mnar2 <- ggplot(data2, aes(x=height)) +
+  geom_histogram(bins = 20, color = "black", fill = "white") +
+  facet_grid(mHeight ~ .)
+mnar3 <- ggplot(data2, aes(x=bmi)) +
+  geom_histogram(bins = 20, color = "black", fill = "white") +
+  facet_grid(mBmi ~ .)
+mnar4 <- ggplot(data2, aes(x=active)) +
+  geom_histogram(bins = 20, color = "black", fill = "white") +
+  facet_grid(mActive ~ .)
+
+ggarrange(mnar1, mnar2, mnar3, mnar4,
+  labels = c("A", "B", "C", "D"),
+  ncol = 2, nrow = 2)
+```
+
+
+## Missingness of weight{#missW}
+
+
+```{r mar-weight, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of weight is MAR"}
+marWeight1 <- data3 %>% select(sex, weight) %>% spineMiss()
+marWeight2 <- data3 %>% select(smoke, weight) %>% spineMiss()
+marWeight3 <- data3 %>% select(intensity, weight) %>% spineMiss()
+marWeight4 <- plotMiss(data3$rest, data3$weight, data3, xlab = "rest", ylab= "weight")
+marWeight5 <- plotMiss(data3$age, data3$weight, data3, xlab = "age", ylab = "weight")
+marWeight6 <- plotMiss(data3$height, data3$weight, data3, xlab = "height", ylab = "weight")
+marWeight7 <- plotMiss(data3$bmi, data3$weight, data3, xlab = "bmi", ylab = "weight")
+marWeight8 <- plotMiss(data3$active, data3$weight, data3, xlab = "active", ylab = "weight")
+
+marWeight1
+marWeight2
+marWeight3
+marWeight4
+marWeight5
+marWeight6
+marWeight7
+marWeight8
+```
+
+
+
+## Missingness of height{#missH}
+
+```{r mar-height, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of height is MAR"}
+marHeight1 <- data3 %>% select(sex, height) %>% spineMiss()
+marHeight2 <- data3 %>% select(smoke, height) %>% spineMiss()
+marHeight3 <- data3 %>% select(intensity, height) %>% spineMiss()
+marHeight4 <- plotMiss(data3$rest, data3$height, data3, xlab = "rest", ylab= "height")
+marHeight5 <- plotMiss(data3$age, data3$height, data3, xlab = "age", ylab = "height")
+marHeight6 <- plotMiss(data3$bmi, data3$height, data3, xlab = "bmi", ylab = "height")
+marHeight7 <- plotMiss(data3$active, data3$height, data3, xlab = "active", ylab = "height")
+
+marHeight1
+marHeight2
+marHeight3
+marHeight4
+marHeight5
+marHeight6
+marHeight7
+```
+
+## Missingness of Active
+
+```{r mar-active, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of active is MAR"}
+marActive1 <- data3 %>% select(sex, active) %>% spineMiss()
+marActive2 <- data3 %>% select(smoke, active) %>% spineMiss()
+marActive3 <- data3 %>% select(intensity, active) %>% spineMiss()
+marActive4 <- plotMiss(data3$rest, data3$active, data3, xlab = "rest", ylab= "active")
+marActive5 <- plotMiss(data3$age, data3$active, data3, xlab = "age", ylab = "active")
+marActive6 <- plotMiss(data3$height, data3$active, data3, xlab = "height", ylab = "active")
+marActive7 <- plotMiss(data3$bmi, data3$active, data3, xlab = "bmi", ylab = "active")
+marActive8 <- plotMiss(data3$weight, data3$active, data3, xlab = "weight", ylab = "active")
+
+marActive1
+marActive2
+marActive3
+marActive4
+marActive5
+marActive6
+marActive7
+marActive8
+```
+
+
+## Missingness of Bmi{#missB}
+
+```{r mar-bmi, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of bmi is MAR"}
+marBmi1 <- data3 %>% select(sex, bmi) %>% spineMiss()
+marBmi2 <- data3 %>% select(smoke, bmi) %>% spineMiss()
+marBmi3 <- data3 %>% select(intensity, bmi) %>% spineMiss()
+marBmi4 <- plotMiss(data3$rest, data3$bmi, data3, xlab = "rest", ylab= "bmi")
+marBmi5 <- plotMiss(data3$age, data3$bmi, data3, xlab = "age", ylab = "bmi")
+marBmi6 <- plotMiss(data3$height, data3$bmi, data3, xlab = "height", ylab = "bmi")
+marBmi7 <- plotMiss(data3$active, data3$bmi, data3, xlab = "active", ylab = "bmi")
+
+
+marBmi1
+marBmi2
+marBmi3
+marBmi4
+marBmi5
+marBmi6
+marBmi7
+```
+
+
+## Missingness of Smoke{#MissS}
+
+```{r mar-smoke, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of smoking is MAR"}
+marActive1 <- data3 %>% select(sex, active) %>% spineMiss()
+marActive2 <- data3 %>% select(smoke, active) %>% spineMiss()
+marActive3 <- data3 %>% select(intensity, active) %>% spineMiss()
+marActive4 <- plotMiss(data3$rest, data3$active, data3, xlab = "rest", ylab= "active")
+marActive5 <- plotMiss(data3$age, data3$active, data3, xlab = "age", ylab = "active")
+marActive6 <- plotMiss(data3$height, data3$active, data3, xlab = "height", ylab = "active")
+marActive7 <- plotMiss(data3$bmi, data3$active, data3, xlab = "bmi", ylab = "active")
+marActive8 <- plotMiss(data3$weight, data3$active, data3, xlab = "weight", ylab = "active")
+
+marActive1
+marActive2
+marActive3
+marActive4
+marActive5
+marActive6
+marActive7
+marActive8
+```
+
+
