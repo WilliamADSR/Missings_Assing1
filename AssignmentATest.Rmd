@@ -169,21 +169,19 @@ fit1 <- lm(active ~ age + bmi*sex + smoke, data=data0)
 fit2 <- lm(active ~ age + bmi*sex + smoke, data=data1)
 coef1 <- round(fit1$coefficients, 3)
 coef2 <- round(fit2$coefficients, 3)
+SE1 <- round(summary(fit1)$coefficients[,2], 2)
+SE2 <- round(summary(fit2)$coefficients[,2], 2)
+pVal1 <- round(summary(fit1)$coefficients[,4], 3)
+pVal2 <- round(summary(fit2)$coefficients[,4], 3)
 
 
 tab3 <- data.frame(
-  #variables <- c("(constant)", "Age", "Bmi", "Sex", 
-   #              "Smoke", "Sex:Bmi"),
   coefObs <-  coef1,
-  seObs <- c("14.34", "0.11", "0.55", "20.78",
-                "2.91", "0.88"),
-  pObs <- c("<.001***", "<.001***", ".003**", ".117",
-              ".580", ".199"),
+  seObs <- SE1,
+  pObs <- pVal1,
   coefTrue <- coef2,
-  seTrue <- c("9.03", "0.07", "0.35", "14.16",
-              "1.99", "0.60"),
-  pTrue <- c("<.001***", "<.001***", "<.001***", ".002**",
-              ".078", ".006**"))
+  seTrue <- SE2,
+  pTrue <- pVal2)
 
 ```
 
