@@ -152,7 +152,7 @@ dataCor <- data0
 dataCor$smoke <- as.numeric(dataCor$smoke)
 dataCor$sex <- as.numeric(dataCor$sex)
 dataCor$intensity <- as.numeric(dataCor$intensity)
-cor1 <- cor(dataCor, use = "pairwise.complete.obs")
+cor1 <- round(cor(dataCor, use = "pairwise.complete.obs"), 2)
 
 kbl(cor1, caption = "Correlations of obsereved data") %>% 
   kable_classic(full_width = FALSE, html_font = "Cambria" )
@@ -160,6 +160,19 @@ kbl(cor1, caption = "Correlations of obsereved data") %>%
 
 ```
 
+
+```{r corTrue, results = 'show' }
+dataCorT <- data1
+dataCorT$smoke <- as.numeric(dataCorT$smoke)
+dataCorT$sex <- as.numeric(dataCorT$sex)
+dataCorT$intensity <- as.numeric(dataCorT$intensity)
+cor2 <- round(cor(dataCorT, use = "pairwise.complete.obs"), 2)
+
+kbl(cor2, caption = "Correlations of true data") %>% 
+  kable_classic(full_width = FALSE, html_font = "Cambria" )
+
+
+```
 
 
 ## Regression{#data4}
@@ -633,24 +646,76 @@ marBmi7
 
 ## Missingness of Smoke{#MissS}
 
-```{r mar-smoke, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of smoking is MAR"}
-marActive1 <- data3 %>% select(sex, active) %>% spineMiss()
-marActive2 <- data3 %>% select(smoke, active) %>% spineMiss()
-marActive3 <- data3 %>% select(intensity, active) %>% spineMiss()
-marActive4 <- plotMiss(data3$rest, data3$active, data3, xlab = "rest", ylab= "active")
-marActive5 <- plotMiss(data3$age, data3$active, data3, xlab = "age", ylab = "active")
-marActive6 <- plotMiss(data3$height, data3$active, data3, xlab = "height", ylab = "active")
-marActive7 <- plotMiss(data3$bmi, data3$active, data3, xlab = "bmi", ylab = "active")
-marActive8 <- plotMiss(data3$weight, data3$active, data3, xlab = "weight", ylab = "active")
 
-marActive1
-marActive2
-marActive3
-marActive4
-marActive5
-marActive6
-marActive7
-marActive8
+```{r}
+outS1 <- catDif(data3$smoke, data3$sex)
+cOutS1 <- round(outS1$statistic, 3)
+pOutS1 <- round(outS1$p.value, 3)
+
+outS2 <- catDif(data3$smoke, data3$intensity)
+cOutS2 <- round(outS2$statistic, 3)
+pOutS2 <- round(outS2$p.value, 3) 
+
+outS3 <- t.test(rest ~ mSmoke, data = data3)
+tOutS3 <- round(outS3$statistic, 3)
+pOutS3 <- round(outS3$p.value, 3)
+
+outS4 <- t.test(age ~ mSmoke, data = data3)
+tOutS4 <- round(outS4$statistic, 3)
+pOutS4 <- round(outS4$p.value, 3)
+
+outS5 <- t.test(height ~ mSmoke, data = data3)
+tOutS5 <- round(outS5$statistic, 3)
+pOutS5 <- round(outS5$p.value, 3)
+
+outS6 <- t.test(bmi ~ mSmoke, data = data3)
+tOutS6 <- round(outS6$statistic, 3)
+pOutS6 <- round(outS6$p.value, 3)
+
+outS7 <- t.test(weight ~ mSmoke, data = data3)
+tOutS7 <- round(outS7$statistic, 3)
+pOutS7 <- round(outS7$p.value, 3)
+
 ```
+
+missing smoke on sex: $x^2 =$ `r cOutS1`, $p =$ `r pOutS1`
+
+missing smoke on intensity: $x^2 =$ `r cOutS2`, $p =$ `r pOutS2`
+
+missing smoke on rest: $t =$ `r tOutS3`, $p =$ `r pOutS3`
+
+missing smoke on age: $t =$ `r tOutS4`, $p =$ `r pOutS4`
+
+missing smoke on height: $t =$ `r tOutS5`, $p =$ `r pOutS5`
+
+missing smoke on bmi: $t =$ `r tOutS6`, $p =$ `r pOutS6`
+
+missing smoke on weight: $t =$ `r tOutS7`, $p =$ `r pOutS7`
+
+
+
+
+```{r mar-smoke, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of smoking is MAR"}
+marSmoke1 <- data3 %>% select(sex, smoke) %>% spineMiss()
+marSmoke2 <- data3 %>% select(intensity, smoke) %>% spineMiss()
+marSmoke3 <- data3 %>% select(rest, smoke) %>% spineMiss()
+marSmoke4 <- data3 %>% select(age, smoke) %>% spineMiss()
+marSmoke5 <- data3 %>% select(height, smoke) %>% spineMiss()
+marSmoke6 <- data3 %>% select(bmi, smoke) %>% spineMiss()
+marSmoke7 <- data3 %>% select(weight, smoke) %>% spineMiss()
+
+
+marSmoke1
+marSmoke2
+marSmoke3
+marSmoke4
+marSmoke5
+marSmoke6
+marSmoke7
+
+```
+
+
+
 
 
