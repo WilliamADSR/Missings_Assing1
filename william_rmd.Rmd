@@ -1,0 +1,82 @@
+---
+title: "Assingment A: Investigating the scope of the missingness problem"
+author: "William Schaafsma"
+date: "24-2-2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Libraries
+```{r libraries, warning = FALSE, message = FALSE}
+library(mice)
+library(tidyverse)
+library(ggplot2)
+library(mice)
+library(dplyr)
+library(naniar)
+library(magrittr)
+
+```
+
+## Introduction
+For this a assignment we are building a multiple regression model where resting heart rate is the outcome variable. 
+
+The matter of interest will be the impact that incomplete data has on our inferences compared to the inferences we make with complete data.
+
+Therefore our research question states: what impact do missing values have on a "resting heart rate" model inference?
+
+## 2. Loading both observed and true dataset
+```{r}
+data0 <- readRDS("incomplete_data_g1.rds")
+data1 <- readRDS("complete_data.rds")
+```
+
+## Quick inspection of both datasets
+```{r}
+str(data1)
+```
+*Needs commenting*
+```{r}
+str(data0)
+```
+*Needs commenting*
+```{r}
+summary(data1)
+```
+*Needs commenting*
+```{r}
+summary(data0)
+```
+*Needs commenting*
+
+## Correlation matrix for true database
+First select the numeric variables for a quick investigation
+*install Hmisc package*
+```{r}
+num_variables <- dplyr::select_if(data1, is.numeric)
+cor_num <- cor(num_variables)
+cor_num
+```
+
+
+## Including Plots
+```{r pressure, echo=FALSE}
+
+```
+
+## Inspecting missingness
+```{r}
+md.pattern(data0)
+```
+In total, the observed dataset contains 540 missing values. The variables **age**, **sex**, **intensity** and **rest** have zero missings. 
+```{r}
+vis_miss(data0)
+```
+
+```{r}
+mactive <- is.na(data0$active)#create variable that contains missings
+t.test(bmi ~ mactive, data = data1) #testing differences for missings
+```
