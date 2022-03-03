@@ -57,11 +57,12 @@ library(VIM)
 
 # Introduction{#intro}
 
-The matter of interest for this assignment will be the impact that incomplete data (**observed data**) has on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model 
+The matter of interest for this assignment will be the impact that incomplete data (**observed data**) has on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model. Firstly, we provide descriptive statistics and correlations. 
 
-Therefore, our research question states: what impact do missing values have on an "active" heart rate" model inference? Consequently, the outcome of our model is *active heart rate*. The predictors are *age* and *smoke*. An interaction effect between *bmi* and *sex* is also included.
-For the first model we used the observed data, and for the second model we used the true data. When examining Table 2.5 several differences in estimates and p-values \@ref(tab:reg)
+The outcome of our model is *active heart rate*. The predictors are *age* and *smoke*. An interaction effect between *bmi* and *sex* is also included.
+For the first model we used the observed data, and for the second model we used the true data.
 
+Therefore, our research question states: what impact do missing values have on an "active heart rate" model inference?  
 
 ---
 
@@ -100,7 +101,7 @@ kbl(data1[1:5,], caption = "True Data") %>%
 
 Obviously, neither the mean nor the variance of age, and rest changed since these has no missing values. 
 
-The mean of active is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
+The mean of active is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
 
 The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
 
@@ -288,6 +289,7 @@ data3["mSmoke"] = is.na(data0$smoke)
 ---
 ## 2.4 Answering the research question
 
+When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error and p-values. Regarding the beta coefficients, missing data caused the beta's of the true data to be systematically underestimated. However, the standard error is systematically overestimated. Furthermore, the missing data caused several predictors to be wrongly non significant (type II error) in the observed data. This goes for *sexfemale* and the *bmi:sexfemale* interaction. Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non signifianct, caused by underestimated beta coefficients. Thus, the model based on observed data leads to inaccurate inferences.
 
 
 ## Looking for the missingness
