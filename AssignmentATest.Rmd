@@ -290,7 +290,7 @@ data3["mSmoke"] = is.na(data0$smoke)
 ## Looking for the missingness
 
 ```{r}
-# Doing t-test to calculate whether the difference of the mean in the observed and true dataset is different
+# Doing t-test to calculate whether the difference of the mean in the observed and true dataset is significant
 
 outW <- meanDif(data0$weight, data1$weight) 
 tOutW <- round(outW$statistic, 3) 
