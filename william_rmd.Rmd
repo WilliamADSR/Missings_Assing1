@@ -22,17 +22,17 @@ library(magrittr)
 ```
 
 ## Introduction
-For this a assignment we are building a multiple regression model where resting heart rate is the outcome variable. 
 
-The matter of interest will be the impact that incomplete data has on our inferences compared to the inferences we make with complete data.
+The matter of interest for this assignment will be the impact that incomplete data (**observed data**) has on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model 
 
-Therefore our research question states: what impact do missing values have on a "resting heart rate" model inference?
+Therefore our research question states: what impact do missing values have on a "active" heart rate" model inference?
 
 ## 2. Loading both observed and true dataset
 ```{r}
 data0 <- readRDS("incomplete_data_g1.rds")
 data1 <- readRDS("complete_data.rds")
 ```
+
 
 ## Quick inspection of both datasets
 ```{r}
@@ -64,7 +64,8 @@ cor_num
 
 ## Including Plots
 ```{r pressure, echo=FALSE}
-
+fig1 <- ggplot(data1) + aes(x = sex, y = age) + geom_boxplot(color = "#f49bd2")
+fig1
 ```
 
 ## Inspecting missingness
