@@ -182,6 +182,11 @@ kbl(cor2, caption = "Correlations of true data") %>%
 
 ```
 
+Correlation description
+
+The correlations between the variables of the observed data set are marginally different than the correlations of the true data. Although the majority of the correlations are almost identical, a few correlations are negative in the observed data, and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01) albeit almost 0, while the correlation for these variables in the true data set is negative (*r* = -0.05). 
+
+However, the impact of missing data on the correlations appears to be small, as the difference in correlation coefficients between the two data sets are negligible. Although some correlations differ in valency between the data sets, the correlation coefficients remain close to 0, and thus, not distort inferences made with the observed data set.
 
 ## Regression{#data4}
 
