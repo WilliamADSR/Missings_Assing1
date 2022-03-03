@@ -66,8 +66,8 @@ Therefore our research question states: what impact do missing values have on a 
 ---
 
 ```{r}
-data0 <- readRDS("~/Documents/Blok 3/Missing values/Assignments/incomplete_data_g1.rds") # load incomoplete
-data1 <- readRDS("~/Documents/Blok 3/Missing values/Assignments/complete_data.rds")
+data0 <- readRDS("~/GitHub/Missings_Assing1/incomplete_data_g1.rds") # load incomoplete
+data1 <- readRDS("~/GitHub/Missings_Assing1/complete_data.rds")
 ```
 
 ```{r, include=FALSE}
