@@ -57,18 +57,23 @@ library(VIM)
 
 # Introduction{#intro}
 
-The matter of interest for this assignment will be the impact that incomplete data (**observed data**) has on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model. Firstly, we provide descriptive statistics and correlations. 
+The matter of interest for this assignment will be the impact that incomplete data (**observed data**) has on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model. 
 
-The outcome of our model is *active heart rate*. The predictors are *age* and *smoke*. An interaction effect between *bmi* and *sex* is also included.
-For the first model we used the observed data, and for the second model we used the true data.
+Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:obsData) we compare the head of the observed data and the true data. Additionally in \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices. One for the observed data \@ref(tab:corObs) and the other for the true data \@ref(tab:corTrue). 
 
-Therefore, our research question states: what impact do missing values have on an "active heart rate" model inference?  
+Secondly we present our multiple regression model in table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data whereas the following columns reflect the true data.
+
+The research question we tend to answer in accordance with our model is: *What impact do missing values have on an "active heart rate" model inference?*
+
+Thirldy we start by inspecting the missing values. We try to find out where the missings occur. In \@ref(fig:misspat) we start by giving a global overview of the missings.
+
+
 
 ---
 
 ```{r}
-data0 <- readRDS("~/GitHub/Missings_Assing1/incomplete_data_g1.rds") # load incomoplete
-data1 <- readRDS("~/GitHub/Missings_Assing1/complete_data.rds")
+data0 <- readRDS("incomplete_data_g1.rds") # load incomoplete
+data1 <- readRDS("complete_data.rds")
 ```
 
 ```{r, include=FALSE}
@@ -157,7 +162,7 @@ dataCor$sex <- as.numeric(dataCor$sex)
 dataCor$intensity <- as.numeric(dataCor$intensity)
 cor1 <- round(cor(dataCor, use = "pairwise.complete.obs"), 2)
 
-kbl(cor1, caption = "Correlations of obsereved data") %>% 
+kbl(cor1, caption = "Correlations of observed data") %>% 
   kable_classic(full_width = FALSE, html_font = "Cambria" )
 
 
@@ -209,6 +214,12 @@ kbl(tab3, caption = "Regression analysis of True and Observed Data",
     ) %>% 
   kable_classic(full_width = F, html_font = "Cambria")
 ```
+
+
+## Answering the research question
+
+When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error and p-values. Regarding the beta coefficients, missing data caused the beta's of the true data to be systematically underestimated. However, the standard error is systematically overestimated. Furthermore, the missing data caused several predictors to be wrongly non significant (type II error) in the observed data. This goes for *sexfemale* and the *bmi:sexfemale* interaction. Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non signifianct, caused by underestimated beta coefficients. Thus, the model based on observed data leads to inaccurate inferences.
+
 
 ---
 
@@ -287,10 +298,6 @@ data3["mSmoke"] = is.na(data0$smoke)
 ```
 
 ---
-## 2.4 Answering the research question
-
-When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error and p-values. Regarding the beta coefficients, missing data caused the beta's of the true data to be systematically underestimated. However, the standard error is systematically overestimated. Furthermore, the missing data caused several predictors to be wrongly non significant (type II error) in the observed data. This goes for *sexfemale* and the *bmi:sexfemale* interaction. Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non signifianct, caused by underestimated beta coefficients. Thus, the model based on observed data leads to inaccurate inferences.
-
 
 ## Looking for the missingness
 
