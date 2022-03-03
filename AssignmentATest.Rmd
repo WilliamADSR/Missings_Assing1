@@ -60,7 +60,7 @@ library(VIM)
 The matter of interest for this assignment will be the impact that incomplete data (**observed data**) has on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model 
 
 Therefore, our research question states: what impact do missing values have on an "active" heart rate" model inference? Consequently, the outcome of our model is *active heart rate*. The predictors are *age* and *smoke*. An interaction effect between *bmi* and *sex* is also included.
-For the first model we used the observed data, and for the second model we used the true data. When examining Table 2.5 several differences in estimates and p-values \@ref(fig:reg)
+For the first model we used the observed data, and for the second model we used the true data. When examining Table 2.5 several differences in estimates and p-values \@ref(tab:reg)
 
 
 ---
