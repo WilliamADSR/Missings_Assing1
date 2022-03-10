@@ -108,11 +108,13 @@ Obviously, neither the mean nor the variance of age, and rest changed since thes
 
 The mean of active is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
 
-The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
+The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing height in active are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
 
-The mean of weight is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 57% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
+The mean of weight is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 57% of the observations). The missing values in weight are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
 
-The mean of bmi is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
+The mean of bmi is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing bmi in active are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
+
+Furthermore, the variance of the variables age and rest are unaffected in the observed data set. The variance of the variable active in the observed data set is .01 lower than the true data set, and thus almost entirely unaffected. However the variables height, weight, and bmi have greater variance in the true data set than the observed data set. This implies that the missingness causes an underestimation of the variance.
 
 ```{r, include = FALSE}
 colMeans(data0[c(1, 5:9)], na.rm =TRUE)
@@ -234,6 +236,9 @@ When examining Table \@ref(tab:reg) *Regression analysis of True and Observed da
 
 
 There are 540 missing values. 0 for age, 0 for sex, 0 for intensity, 0 for rest, 58 for smoke, 92 for height, 93 for bmi, 123 for active, and 174 for weight. moreover there are 132 completely observed rows, 15 rows with one missing value, 37 rows with two missing values, 52 rows with three missing values, 55 rows with four missing values, 15 rows with five missing values.
+
+The missingness in the data is non-monotone, because the variable with the least missing values (*smoke*) has observed values for other variables with more missingness (e.g., *smoke* and *bmi*). The missingness would be monotone if the variable with the least missing values (*smoke*), would have missing values on all other variables with more missingness (e.g., *height*). Interestingly, a monotone pattern is only the case for *smoke* and *weight*.
+
 
 ```{r misspat, fig.cap = "pattern of the missingness", fig.show='hold', out.width = "50%"}
 md.pattern(data0)
