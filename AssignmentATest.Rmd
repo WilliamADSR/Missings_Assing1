@@ -306,6 +306,9 @@ data3["mSmoke"] = is.na(data0$smoke)
 
 ## Looking for the missingness
 
+In this section we are going to investigate whether the mean of the missing values differ significantly from the mean of the observed values. We will do this by using a paired sampled t-test for the numeric variables. In order to compare the mean of the missing values with the true values, we computed a logical vector for each vector that has missing observations. The missingness vectors have the value `TRUE` for all missing entries and `FALSE` for all observed entries. These missingness vectors will be used as grouping variable in the true data set to compare the missing values with the observed values. 
+For smoke, which is a categorical variable, we will use a $x^2$ test 
+
 ```{r}
 # Doing t-test to calculate whether the difference of the mean in the observed and true dataset is significant
 
