@@ -108,11 +108,11 @@ Obviously, neither the mean nor the variance of age, and rest changed since thes
 
 The mean of active is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
 
-The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
+The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in height are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
 
-The mean of weight is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 57% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
+The mean of weight is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 57% of the observations). The missing values in weight are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
 
-The mean of bmi is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
+The mean of bmi is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in bmi are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
 
 Furthermore, the variance of the variables age and rest are unaffected in the observed data set. The variance of the variable active in the observed data set is .01 lower than the true data set, and thus almost entirely unaffected. However the variables height, weight, and bmi have greater variance in the true data set than the observed data set. This implies that the missingness causes an underestimation of the variance.
 
