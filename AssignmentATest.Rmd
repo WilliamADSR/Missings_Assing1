@@ -133,7 +133,9 @@ tab2 <- data.frame(
   varObs <- c("149.73", "383.05", "120.78", "100.66",
               "260.26", "12.91"),
   varTrue <- c("149.73", "383.04", "120.78", "105.29",
-              "274.85", "13.38")
+              "274.85", "13.38"),
+  nObs <- c("306", "183", "306", "214", "132", "213"),
+  nTrue <- c("306", "306", "306", "306", "306", "306")
 )
 ```
 
@@ -141,7 +143,7 @@ tab2 <- data.frame(
 ```{r des, results='hold'}
 kbl(tab2, caption = "Means and variances in true and observed dataset",
     col.names = c("Variables", "$M_{obs}$", "$M_{true}$", 
-                "var obs", "var true")
+                "var obs", "var true", "$N_{obs}$", "$N_{true}$")
     ) %>% 
   kable_classic(full_width = F, html_font = "Cambria") %>% 
   footnote(
