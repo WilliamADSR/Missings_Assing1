@@ -65,7 +65,9 @@ Secondly we present our multiple regression model in table \@ref(tab:reg). Our m
 
 The research question we tend to answer in accordance with our model is: *What impact do missing values have on an "active heart rate" model inference?*
 
-Thirldy we start by inspecting the missing values. We try to find out where the missings occur. In \@ref(fig:misspat) we start by giving a global overview of the missings.
+Thirldy we start by inspecting the missing values. We try to find out where the missing values occur. In \@ref(fig:misspat) we start by giving a global overview of the missings. Then in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
+
+Lastly we perform t-tests and logistic regression functions on the variables that contain missing values to check what type of missings we are dealing with, e.g. MNAR, MAR or MCAR. We also provide plots here to visualize where the missing values occur.
 
 
 
