@@ -1,6 +1,6 @@
 ---
 title: "Assignment A: Investigating the scope of the missingness problem"
-Authors: "Martijn Koster", "William Schaafsma", "Martijn van Dam", "Victor Hovius"
+author: "Martijn Koster", "William Schaafsma", "Martijn van Dam", "Victor Hovius"
 date: "2/22/2022"
 output: 
   bookdown::html_document2: default
