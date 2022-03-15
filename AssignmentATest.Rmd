@@ -745,6 +745,30 @@ marSmoke7
 ```
 
 
+```{r}
+fit1 <- glm(mWeight ~ height + age + smoke + intensity + bmi + active + sex,  data = data2, family = 'binomial')
+summary(fit1)
 
+fit2 <- glm(mHeight ~ age + smoke + intensity + bmi + active + sex,  data = data2, family = 'binomial')
+summary(fit2)
+
+fit3 <- glm(mBmi ~ age + smoke + intensity + height + active + sex,  data = data2, family = 'binomial')
+summary(fit3)
+
+fit4 <- glm(mActive ~ age + smoke + intensity + bmi + height + sex,  data = data2, family = 'binomial')
+summary(fit4)
+
+fit5 <- glm(mSmoke ~ age  + intensity + bmi + height + sex,  data = data2, family = 'binomial')
+summary(fit5)
+
+
+fit6 <- glm(mSmoke ~ sex, data = data2, family = 'binomial')
+fit7 <- glm(mSmoke ~ height, data = data2, family = 'binomial')
+fit8 <- glm(mSmoke ~ intensity, data = data2, family = 'binomial')
+summary(fit6)
+summary(fit7)
+summary(fit8)
+
+```
 
 
