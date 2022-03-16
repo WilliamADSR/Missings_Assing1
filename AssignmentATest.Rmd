@@ -229,7 +229,11 @@ kbl(tab3, caption = "Regression analysis of True and Observed Data",
 
 ## Answering the research question
 
-When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error and p-values. Regarding the beta coefficients, missing data caused the beta's of the true data to be systematically underestimated. However, the standard error is systematically overestimated. Furthermore, the missing data caused several predictors to be wrongly non significant (type II error) in the observed data. This goes for *sexfemale* and the *bmi:sexfemale* interaction. Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non signifianct, caused by underestimated beta coefficients. Thus, the model based on observed data leads to inaccurate inferences.
+When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error and p-values. The table contains only variables with missing values, and an interaction effect. Although almost all beta coefficients are nearly equal, the beta coefficients of the observed data set are systematically underestimated. This is especially the case for *sexfemale*, as the difference between the beta coefficients is almost 9.0. When making inferences, the effect of sex on active heart rate would be underestimated.
+
+Regarding the standard errors, missing data caused these parameters of the observed data set to be systemetically overestimated. Larger standard errors contribute to the possibility of making a type II error, as is the case in our data set. The larger standard errors in the observed data set might have played a role in the variables *sexfemale* and the interaction  *bmi:sexfemale* turning non significant. When making inferences with the model based on the observed data, these variables would wrongly be neglected. 
+
+Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non signifianct, caused by underestimated beta coefficients. Thus, the model based on observed data leads to inaccurate inferences.
 
 
 ---
