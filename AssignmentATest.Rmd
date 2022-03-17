@@ -67,7 +67,7 @@ The research question we tend to answer in accordance with our model is: *What i
 
 Thirldy we start by inspecting the missing values. We try to find out where the missing values occur. In \@ref(fig:misspat) we start by giving a global overview of the missings. Then in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
 
-Lastly we perform t-tests and logistic regression functions on the variables that contain missing values to check what type of missings we are dealing with, e.g. MNAR, MAR or MCAR. We also provide plots here to visualize where the missing values occur.
+Lastly we perform t-tests on the variables that contain missing values to check what type of missingness we are dealing with, i.e. MNAR, MAR or MCAR. We also provide plots here to visualize where the missing values occur.
 
 
 
@@ -155,14 +155,7 @@ kbl(tab2, caption = "Means and variances in true and observed dataset",
     general = "obs = Observed Dataset, true = True Dataset")
 ```
 
-```{r}
-tabm4 <- xtabs(~ sex+smoke+intensity, data= data0)
-ftable(tabm4)
 
-tabm5 <- xtabs(~ sex+smoke+intensity, data= data1)
-ftable(tabm5)
-
-```
 
 
 
@@ -172,7 +165,33 @@ The categorical variables in both data sets are *smoke*, *sex* and *intensity*. 
 
 Despite there being differences in amount of observed values between the data sets, differences between groups remain unchanged. There are more males than females in both data sets, as well as more non-smokers than smokers. Also, in both data sets more males reported smoking than females. The most frequent reported workout intensity for both males and females in the two data sets is moderate, followed by low and high.  
 
+```{r cat, results = 'hold', out.width = "50%"}
+tabm4 <- xtabs(~ sex+smoke+intensity, data= data0)
+tabc4 <- round(prop.table(tabm4), 3)
+
+tabm5 <- xtabs(~ sex+smoke+intensity, data= data1)
+tabc5 <- round(prop.table(tabm5), 3)
+
+
+kbl(list(tabc4, tabc5), caption = "proportion table of categorical in observed  and true data",
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+    footnote(
+    general_title = "Note.",
+    general = "On the left side of the table the proportions of the observed
+    data are shown, whereas the proportions of the true data are represented 
+    on the right side of the table.", footnote_as_chunk = TRUE)
+
+
+
+
+```
+
 ## Correlations{#data3}
+
+As shown in Table \@ref(tab:corObs) and Table \@ref(tab:corTrue), the correlations between the variables of the observed data set are slightly different than the correlations between variables of the true data. Although the majority of the correlations are almost identical, a few correlations are negative in the observed data, and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01) albeit almost 0, while the correlation for these variables in the true data set is negative (*r* = -0.05). 
+
+However, the impact of missing data on the correlations appears to be small, as the difference in correlation coefficients between the two data sets are negligible. Although some correlations differ in valency between the data sets, the correlation coefficients remain close to 0, and thus, not distort inferences made with the observed data set.
 
 ```{r corObs, results = 'show' }
 dataCor <- data0
@@ -201,13 +220,11 @@ kbl(cor2, caption = "Correlations of true data") %>%
 
 ```
 
-# Correlation description
 
-The correlations between the variables of the observed data set are slightly different than the correlations between variables of the true data. Although the majority of the correlations are almost identical, a few correlations are negative in the observed data, and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01) albeit almost 0, while the correlation for these variables in the true data set is negative (*r* = -0.05). 
 
-However, the impact of missing data on the correlations appears to be small, as the difference in correlation coefficients between the two data sets are negligible. Although some correlations differ in valency between the data sets, the correlation coefficients remain close to 0, and thus, not distort inferences made with the observed data set.
 
-## Regression{#data4}
+
+# Regression{#data4}
 
 ```{r}
 fit1 <- lm(active ~ age + bmi*sex + smoke, data=data0)
@@ -232,7 +249,7 @@ tab3 <- data.frame(
 
 ```{r reg, results='hold'}
 
-kbl(tab3, caption = "Regression analysis of True and Observed Data",
+kbl(tab3, caption = "Regression analysis of True (N=306) and Observed Data (N=155)",
     col.names = c("$\\beta_{obs}$", "$SE_{obs}$", "$p_{obs}$",
                  "$\\beta_{true}$", "$SE_{true}$", "$p_{true}$")
     ) %>% 
@@ -373,7 +390,7 @@ smoke: $x^2 =$ `r cOutS`, $p =$ `r pOutS`
 
 
 
-```{r mnar-plot, fig.cap="comparing the distribution of the observed and true dataset"}
+```{r mnar-plot, fig.cap="Comparing the distribution of the observed and true dataset"}
 mnar1 <- ggplot(data2, aes(x=weight)) +
   geom_histogram(bins = 20, color = "black", fill = "white") +
   facet_grid(mWeight ~ .)
