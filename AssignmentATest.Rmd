@@ -94,7 +94,7 @@ library(kableExtra)
 
 # Observed vs True data{#data}
 
-In this section we will compare the observed with the true dataset. 
+In this section we will compare the observed with the true data set. 
 
 ```{r obsData, results='hold'}
 kbl(data0[1:5,], caption = "Observed Data") %>% 
@@ -106,15 +106,15 @@ kbl(data1[1:5,], caption = "True Data") %>%
 
 ## Descriptives{#data1}
 
-Obviously, neither the mean nor the variance of age, and rest changed since these has no missing values. 
+Obviously, neither the mean nor the variance of the variables age and rest changed, since they have no missing values. 
 
-The mean of active is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
+The mean of active is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
 
-The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in height are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
+The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30% of the observations). The missing values in height are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
 
-The mean of weight is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 57% of the observations). The missing values in weight are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
+The mean of weight is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 57% of the observations). The missing values in weight are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
 
-The mean of bmi is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we've deleted about 30% of the observations). The missing values in bmi are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
+The mean of bmi is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30% of the observations). The missing values in bmi are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
 
 Furthermore, the variance of the variables age and rest are unaffected in the observed data set. The variance of the variable active in the observed data set is .01 lower than the true data set, and thus almost entirely unaffected. However the variables height, weight, and bmi have greater variance in the true data set than the observed data set. This implies that the missingness causes an underestimation of the variance.
 
@@ -190,7 +190,7 @@ kbl(cor2, caption = "Correlations of true data") %>%
 
 Correlation description
 
-The correlations between the variables of the observed data set are marginally different than the correlations of the true data. Although the majority of the correlations are almost identical, a few correlations are negative in the observed data, and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01) albeit almost 0, while the correlation for these variables in the true data set is negative (*r* = -0.05). 
+The correlations between the variables of the observed data set are slightly different than the correlations between variables of the true data. Although the majority of the correlations are almost identical, a few correlations are negative in the observed data, and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01) albeit almost 0, while the correlation for these variables in the true data set is negative (*r* = -0.05). 
 
 However, the impact of missing data on the correlations appears to be small, as the difference in correlation coefficients between the two data sets are negligible. Although some correlations differ in valency between the data sets, the correlation coefficients remain close to 0, and thus, not distort inferences made with the observed data set.
 
@@ -229,11 +229,11 @@ kbl(tab3, caption = "Regression analysis of True and Observed Data",
 
 ## Answering the research question
 
-When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error and p-values. The table contains only variables with missing values, and an interaction effect. Although almost all beta coefficients are nearly equal, the beta coefficients of the observed data set are systematically underestimated. This is especially the case for *sexfemale*, as the difference between the beta coefficients is almost 9.0. When making inferences, the effect of sex on active heart rate would be underestimated.
+When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error and p-values. The table contains variables with missing values, and an interaction effect. Although almost all beta coefficients are nearly equal, the beta coefficients of the observed data set are systematically underestimated. This is especially the case for *sexfemale*, as the difference between the beta coefficients is almost 9.0. When making inferences, the effect of sex on active heart rate would be underestimated.
 
 Regarding the standard errors, missing data caused these parameters of the observed data set to be systemetically overestimated. Larger standard errors contribute to the possibility of making a type II error, as is the case in our data set. The larger standard errors in the observed data set might have played a role in the variables *sexfemale* and the interaction  *bmi:sexfemale* turning non significant. When making inferences with the model based on the observed data, these variables would wrongly be neglected. 
 
-Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non signifianct, caused by underestimated beta coefficients. Thus, the model based on observed data leads to inaccurate inferences.
+Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non significant, caused by underestimated beta coefficients. The model based on observed data leads thus to inaccurate inferences.
 
 
 ---
@@ -241,7 +241,7 @@ Concluding, the missing data causes the standard errors to be greater, resulting
 # Missingness{#miss}
 
 
-There are 540 missing values. 0 for age, 0 for sex, 0 for intensity, 0 for rest, 58 for smoke, 92 for height, 93 for bmi, 123 for active, and 174 for weight. moreover there are 132 completely observed rows, 15 rows with one missing value, 37 rows with two missing values, 52 rows with three missing values, 55 rows with four missing values, 15 rows with five missing values.
+There are 540 missing values. 0 for age, 0 for sex, 0 for intensity, 0 for rest, 58 for smoke, 92 for height, 93 for bmi, 123 for active, and 174 for weight. Moreover, there are 132 completely observed rows, 15 rows with one missing value, 37 rows with two missing values, 52 rows with three missing values, 55 rows with four missing values, 15 rows with five missing values.
 
 The missingness in the data is non-monotone, because the variable with the least missing values (*smoke*) has observed values for other variables with more missingness (e.g., *smoke* and *bmi*). The missingness would be monotone if the variable with the least missing values (*smoke*), would have missing values on all other variables with more missingness (e.g., *height*). Interestingly, a monotone pattern is only the case for *smoke* and *weight*.
 
@@ -319,8 +319,8 @@ data3["mSmoke"] = is.na(data0$smoke)
 
 ## Looking for the missingness
 
-In this section we are going to investigate whether the mean of the missing values differ significantly from the mean of the observed values. We will do this by using a paired sampled t-test for the numeric variables. In order to compare the mean of the missing values with the true values, we computed a logical vector for each vector that has missing observations. The missingness vectors have the value `TRUE` for all missing entries and `FALSE` for all observed entries. These missingness vectors will be used as grouping variable in the true data set to compare the missing values with the observed values. 
-For smoke, which is a categorical variable, we will use a $x^2$ test 
+In this section we will investigate whether the mean of the missing values differ significantly from the mean of the observed values. This will be done do by using a paired sampled t-test for the numeric variables. In order to compare the mean of the missing values with the true values, we computed a logical vector for each vector that has missing observations. The missingness vectors have the value `TRUE` for all missing entries and `FALSE` for all observed entries. These missingness vectors will be used as grouping variable in the true data set to compare the missing values with the observed values. 
+For smoke, which is a categorical variable, we will use a $x^2$ test. 
 
 ```{r}
 # Doing t-test to calculate whether the difference of the mean in the observed and true dataset is significant
