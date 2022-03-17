@@ -174,9 +174,9 @@ tablecsi1
 
 
 
-# Over here categorical data descriptions
+## Categorical variables{#data2}
 
-The categorical variables in both data sets are *smoke*, *sex* and *intensity*. *Smoke* and *sex* both have two levels ("no" and "yes" for smoke and "male" and "female" for sex), while *intensity* has three levels ("low", "moderate", and "high" ). 
+The categorical variables in both data sets are *smoke*, *sex* and *intensity*. *Smoke* and *sex* both have two levels ("no" and "yes" for smoke and "male" and "female" for sex), while *intensity* has three levels ("low", "moderate", and "high"). 
 
 ## Correlations{#data3}
 
