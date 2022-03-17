@@ -489,7 +489,11 @@ marWeight7
 marWeight8
 ```
 
+Looking at the p value of the missingness of weight on the other columns we can say that there is not a significant relation between any of the columns and the missing values of weight.
 
+The three bar plots show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in weight for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the weight column for smokers and non smokers in the smoke column. The third column shows that how lower the intensity is the less missing values in weight you can expect.
+
+The five scatterplots show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between weight and rest or age there is a clear trend where all the values with a low weight are missing and everything above that is not. The two plots after that between weight and height or bmi show the same thing, but also a cluster of missing values when both columns have low values. The last column between weight and active shows a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 ## Missingness of height{#missH}
 
@@ -554,6 +558,12 @@ marHeight5
 marHeight6
 marHeight7
 ```
+
+Looking at the p value of the missingness of height on the other columns we can say that there is not a significant relation between any of the columns and the missing values of height.
+
+The three bar plots show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in height for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the height column for smokers and non smokers in the smoke column. The third column shows that there is almost no difference between missing values in the height column for high and moderate intensity, but less missing values in the low intensity category. 
+
+The four scatterplots show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between height and rest or age there is a clear trend where all the values with a low height are missing and everything above that is not. The two plots after that between height and bmi or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 ## Missingness of Active
 
@@ -630,6 +640,11 @@ marActive7
 marActive8
 ```
 
+Looking at the p value of the missingness of active on the other columns we can say that there is not a significant relation between any of the columns and the missing values of active.
+
+The three bar plots show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second column shows that that smokers have a bit less missing values than non smokers in the active column. The third column shows that there is almost no difference between missing values in the active column for the moderate and low intensity category, but more missing values in the high intensity category. 
+
+The five scatterplots show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between active and rest or age there is a clear trend where all the values with a low active are missing and everything above that is not. The three plots after that between active and height, bmi or weight show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 ## Missingness of Bmi{#missB}
 
@@ -697,6 +712,13 @@ marBmi6
 marBmi7
 ```
 
+Looking at the p value of the missingness of bmi on the other columns we can say that there is not a significant relation between any of the columns and the missing values of bmi.
+
+The three bar plots show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in bmi for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the bmi column for smokers and non smokers in the smoke column. The third column shows that there is almost no difference between missing values in the bmi column for the moderate and low intensity category, but more missing values in the high intensity category. 
+
+The *four/five* scatterplots show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between bmi and rest or age there is a clear trend where all the values with a low bmi are missing and everything above that is not. The two plots after that between bmi and height or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+
+Missing a fifth scatterplot??? (weight)
 
 ## Missingness of Smoke{#MissS}
 
@@ -796,4 +818,6 @@ summary(fit8)
 
 ```
 
+(categorical?? If we do this why not sex and intensity also)
 
+Looking at the p value of the missingness of smoke on the other columns we can say that there is only one significant relation between the missing values of smoke on sex. 
