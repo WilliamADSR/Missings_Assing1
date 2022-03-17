@@ -156,19 +156,11 @@ kbl(tab2, caption = "Means and variances in true and observed dataset",
 ```
 
 ```{r}
-tablecs <- table(data0$sex)
-tablecsm <- table(data0$smoke)
-tablecsi <- table(data0$intensity)
-tablec1 <-table(data1$sex)
-tablecm1 <- table(data1$smoke)
-tablecsi1 <- table(data1$intensity)
+tabm4 <- xtabs(~ sex+smoke+intensity, data= data0)
+ftable(tabm4)
 
-tablecs
-tablecsm
-tablecsi
-tablec1
-tablecm1
-tablecsi1
+tabm5 <- xtabs(~ sex+smoke+intensity, data= data1)
+ftable(tabm5)
 
 ```
 
@@ -177,6 +169,8 @@ tablecsi1
 ## Categorical variables{#data2}
 
 The categorical variables in both data sets are *smoke*, *sex* and *intensity*. *Smoke* and *sex* both have two levels ("no" and "yes" for smoke and "male" and "female" for sex), while *intensity* has three levels ("low", "moderate", and "high"). 
+
+Despite there being differences in amount of observed values between the data sets, differences between groups remain unchanged. There are more males than females in both data sets, as well as more non-smokers than smokers. Also, in both data sets more males reported smoking than females. The most frequent reported workout intensity for both males and females in the two data sets is moderate, followed by low and high.  
 
 ## Correlations{#data3}
 
