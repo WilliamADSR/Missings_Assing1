@@ -801,7 +801,9 @@ marSmoke6
 marSmoke7
 
 ```
+Looking at the p value of the missingness of smoke on the other columns we can say that there is only one significant relation between the missing values of smoke on sex. 
 
+The seven bar plots show a visualisation of how the missing data of smoke is divided in the other columns. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second plot shows that there is almost no difference between missing values in the intensity column for the high and low category, but less missing values in the moderate intensity category. The third plot shows that the missingness of smoke on rest is equally divided with two spikes where rest is lower than 55 and higher than 90. There is no more missing values after these spikes, except for one more spike where rest is 40. The forth plot shows that the missingness of smoke on age is equally divided with a spike where age is higher than 60. The fifth plot shows how smaller or higher (than a hight of 170-175) the hight gets te more missing values there are in the smoke column. Except for when the hight is around 205. Then there are close to no missing values. The sixth plot shows that the missingness of smoke on bmi is equally divided except for when bmi is on its lowest or highest. Then there are almost no missing values. The seventh plot shows that the missingness of smoke on weight is equally divided with one spike in the middle between a weight of 70 and 80. When weight is at its lowest or highest there are almost no missing values.
 
 ```{r}
 fit1 <- glm(mWeight ~ height + age + smoke + intensity + bmi + active + sex,  data = data2, family = 'binomial')
