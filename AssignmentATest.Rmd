@@ -155,9 +155,28 @@ kbl(tab2, caption = "Means and variances in true and observed dataset",
     general = "obs = Observed Dataset, true = True Dataset")
 ```
 
-Over here categorical data descriptions
+```{r}
+tablecs <- table(data0$sex)
+tablecsm <- table(data0$smoke)
+tablecsi <- table(data0$intensity)
+tablec1 <-table(data1$sex)
+tablecm1 <- table(data1$smoke)
+tablecsi1 <- table(data1$intensity)
+
+tablecs
+tablecsm
+tablecsi
+tablec1
+tablecm1
+tablecsi1
+
+```
 
 
+
+# Over here categorical data descriptions
+
+The categorical variables in both data sets are *smoke*, *sex* and *intensity*. *Smoke* and *sex* both have two levels ("no" and "yes" for smoke and "male" and "female" for sex), while *intensity* has three levels ("low", "moderate", and "high" ). 
 
 ## Correlations{#data3}
 
@@ -188,7 +207,7 @@ kbl(cor2, caption = "Correlations of true data") %>%
 
 ```
 
-Correlation description
+# Correlation description
 
 The correlations between the variables of the observed data set are slightly different than the correlations between variables of the true data. Although the majority of the correlations are almost identical, a few correlations are negative in the observed data, and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01) albeit almost 0, while the correlation for these variables in the true data set is negative (*r* = -0.05). 
 
