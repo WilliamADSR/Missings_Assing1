@@ -375,15 +375,25 @@ outS <- catDif(data0$smoke, data1$smoke)
 cOutS <- round(outS$statistic, 3)
 pOutS <- round(outS$p.value, 3)
 
+
 ```
 
-weight: $t =$ `r tOutW`, $p =$ `r pOutW`
+```{r mnar-t, results='hold'}
 
-height: $t =$ `r tOutH`, $p =$ `r pOutH`
+tab_mnar <- data.frame(
+  Variables <- c("Weight", "Height", "Bmi", "Active"),
+  meanFalse <- c("73.90", "174.50", "24.11", "95.58"),
+  meanTrue <- c("73.17out", "172.83", "23.95", "93.95"),
+  tstat <- c(tOutW, tOutH, tOutB, tOutA),
+  pval <- c(pOutW, pOutH, pOutB, pOutA)
+)
 
-bmi: $t =$ `r tOutB`, $p =$ `r pOutB`
+kbl(tab_mnar, caption = "Difference in means of observed data and missing data",
+    col.names = c("variables", "$M_{Obs}$", "$M_{True}$", "$t$", "$p$")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
 
-active: $t =$ `r tOutA`, $p =$ `r pOutA`
+```
 
 smoke: $x^2 =$ `r cOutS`, $p =$ `r pOutS`
 
@@ -463,21 +473,32 @@ pOutW8 <- round(outW8$p.value, 3)
 
 ```
 
+```{r missW, results='hold'}
+
+tab_tW <- data.frame(
+  variables <- c("rest", "age", "height", "bmi", "active"),
+  meanObs <- c("69.56", "38.16", "174.28", "24.11", "91.54"),
+  meanTrue <- c("70.17", "38.98", "175.39", "24.12", "96.81"),
+  tVal <- c(tOutW4, tOutW5, tOutW6, tOutW7, tOutW8),
+  pVal <- c(pOutW4, pOutW5, pOutW6, pOutW7, pOutW8)
+)
+
+
+kbl(tab_tW, caption = "Difference in means of missingness of Weight",
+    col.names = c("variables", "$M_{Obs}$", "$M_{True}$", "$t$", "$p$")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+
+```
+
 missing weight on sex: $x^2 =$ `r cOutW1`, $p =$ `r pOutW1`
 
 missing weight on smoke: $x^2 =$ `r cOutW2`, $p =$ `r pOutW2`
 
 missing weight on intensity: $x^2 =$ `r cOutW3`, $p =$ `r pOutW3`
 
-missing weight on rest: $t =$ `r tOutW4`, $p =$ `r pOutW4`
 
-missing weight on age: $t =$ `r tOutW5`, $p =$ `r pOutW5`
-
-missing weight on height: $t =$ `r tOutW6`, $p =$ `r pOutW6`
-
-missing weight on bmi: $t =$ `r tOutW7`, $p =$ `r pOutW7`
-
-missing weight on active: $t =$ `r tOutW8`, $p =$ `r pOutW8`
 
 
 ```{r mar-weight, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of weight is MAR"}
@@ -538,19 +559,32 @@ tOutH7 <- round(outH7$statistic, 3)
 pOutH7 <- round(outH7$p.value, 3)
 ```
 
+
+```{r missH, results='hold'}
+
+tab_tH <- data.frame(
+  variables <- c("rest", "age", "bmi", "active"),
+  meanObs <- c("69.93", "38.66", "24.11", "91.74"),
+  meanTrue <- c("69.60", "38.18", "24.11", "99.05"),
+  tVal <- c(tOutH4, tOutH5, tOutH6, tOutH7),
+  pVal <- c(pOutH4, pOutH5, pOutH6, pOutH7)
+)
+
+
+kbl(tab_tH, caption = "Difference in means of missingness of Height",
+    col.names = c("variables", "$M_{Obs}$", "$M_{True}$", "$t$", "$p$")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+
+```
 missing height on sex: $x^2 =$ `r cOutH1`, $p =$ `r pOutH1`
 
 missing height on smoke: $x^2 =$ `r cOutH2`, $p =$ `r pOutH2`
 
 missing height on intensity: $x^2 =$ `r cOutH3`, $p =$ `r pOutH3`
 
-missing height on rest: $t =$ `r tOutH4`, $p =$ `r pOutH4`
 
-missing height on age: $t =$ `r tOutH5`, $p =$ `r pOutH5`
-
-missing height on bmi: $t =$ `r tOutH6`, $p =$ `r pOutH6`
-
-missing height on active: $t =$ `r tOutH7`, $p =$ `r pOutH7`
 
 ```{r mar-height, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of height is MAR"}
 marHeight1 <- data3 %>% select(sex, height) %>% spineMiss()
@@ -612,22 +646,29 @@ tOutA8 <- round(outA8$statistic, 3)
 pOutA8 <- round(outA8$p.value, 3)
 ```
 
+```{r missA, results='hold'}
 
+tab_tA <- data.frame(
+  variables <- c("rest", "age", "height", "bmi", "weight"),
+  meanObs <- c("69.02", "37.96", "174.41","23.83", "72.94"),
+  meanTrue <- c("71.03", "39.35", "174.77", "24.85", "79.38"),
+  tVal <- c(tOutA4, tOutA5, tOutA6, tOutA7, tOutA8),
+  pVal <- c(pOutA4, pOutA5, pOutA6, pOutA7, pOutA8)
+)
+
+
+kbl(tab_tH, caption = "Difference in means of missingness of active",
+    col.names = c("variables", "$M_{Obs}$", "$M_{True}$", "$t$", "$p$")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+
+```
 missing active on sex: $x^2 =$ `r cOutA1`, $p =$ `r pOutA1`
 
 missing active on smoke: $x^2 =$ `r cOutA2`, $p =$ `r pOutA2`
 
 missing active on intensity: $x^2 =$ `r cOutA3`, $p =$ `r pOutA3`
-
-missing active on rest: $t =$ `r tOutA4`, $p =$ `r pOutA4`
-
-missing active on age: $t =$ `r tOutA5`, $p =$ `r pOutA5`
-
-missing active on height: $t =$ `r tOutA6`, $p =$ `r pOutA6`
-
-missing active on bmi: $t =$ `r tOutA7`, $p =$ `r pOutA7`
-
-missing active on weight: $t =$ `r tOutA8`, $p =$ `r pOutA8`
 
 
 
@@ -690,6 +731,25 @@ tOutB7 <- round(outB7$statistic, 3)
 pOutB7 <- round(outB7$p.value, 3)
 ```
 
+
+```{r missB, results='hold'}
+
+tab_tB <- data.frame(
+  variables <- c("rest", "age", "height", "active"),
+  meanObs <- c("69.84", "38.35", "174.28", "92.12"),
+  meanTrue <- c("69.81", "38.90", "175.39", "95.11"),
+  tVal <- c(tOutB4, tOutB5, tOutB6, tOutB7),
+  pVal <- c(pOutB4, pOutB5, pOutB6, pOutB7)
+)
+
+
+kbl(tab_tH, caption = "Difference in means of missingness of Height",
+    col.names = c("variables", "$M_{Obs}$", "$M_{True}$", "$t$", "$p$")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+
+```
 missing bmi on sex: $x^2 =$ `r cOutB1`, $p =$ `r pOutB1`
 
 missing bmi on smoke: $x^2 =$ `r cOutB2`, $p =$ `r pOutB2`
@@ -805,32 +865,4 @@ Looking at the p value of the missingness of smoke on the other columns we can s
 
 The seven bar plots show a visualisation of how the missing data of smoke is divided in the other columns. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second plot shows that there is almost no difference between missing values in the intensity column for the high and low category, but less missing values in the moderate intensity category. The third plot shows that the missingness of smoke on rest is equally divided with two spikes where rest is lower than 55 and higher than 90. There is no more missing values after these spikes, except for one more spike where rest is 40. The forth plot shows that the missingness of smoke on age is equally divided with a spike where age is higher than 60. The fifth plot shows how smaller or higher (than a hight of 170-175) the hight gets te more missing values there are in the smoke column. Except for when the hight is around 205. Then there are close to no missing values. The sixth plot shows that the missingness of smoke on bmi is equally divided except for when bmi is on its lowest or highest. Then there are almost no missing values. The seventh plot shows that the missingness of smoke on weight is equally divided with one spike in the middle between a weight of 70 and 80. When weight is at its lowest or highest there are almost no missing values.
 
-```{r}
-fit1 <- glm(mWeight ~ height + age + smoke + intensity + bmi + active + sex,  data = data2, family = 'binomial')
-summary(fit1)
 
-fit2 <- glm(mHeight ~ age + smoke + intensity + bmi + active + sex,  data = data2, family = 'binomial')
-summary(fit2)
-
-fit3 <- glm(mBmi ~ age + smoke + intensity + height + active + sex,  data = data2, family = 'binomial')
-summary(fit3)
-
-fit4 <- glm(mActive ~ age + smoke + intensity + bmi + height + sex,  data = data2, family = 'binomial')
-summary(fit4)
-
-fit5 <- glm(mSmoke ~ age  + intensity + bmi + height + sex,  data = data2, family = 'binomial')
-summary(fit5)
-
-
-fit6 <- glm(mSmoke ~ sex, data = data2, family = 'binomial')
-fit7 <- glm(mSmoke ~ height, data = data2, family = 'binomial')
-fit8 <- glm(mSmoke ~ intensity, data = data2, family = 'binomial')
-summary(fit6)
-summary(fit7)
-summary(fit8)
-
-```
-
-(categorical?? If we do this why not sex and intensity also)
-
-Looking at the p value of the missingness of smoke on the other columns we can say that there is only one significant relation between the missing values of smoke on sex. 
