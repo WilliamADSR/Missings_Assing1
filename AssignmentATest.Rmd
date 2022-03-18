@@ -479,8 +479,8 @@ tab_tW <- data.frame(
   variables <- c("rest", "age", "height", "bmi", "active"),
   meanObs <- c("69.56", "38.16", "174.28", "24.11", "91.54"),
   meanTrue <- c("70.17", "38.98", "175.39", "24.12", "96.81"),
-  tVal <- c(tOutW4, tOutW5, tOutW6, tOutW7, tOutW8),
-  pVal <- c(pOutW4, pOutW5, pOutW6, pOutW7, pOutW8)
+  tValW <- c(tOutW4, tOutW5, tOutW6, tOutW7, tOutW8),
+  pValW <- c(pOutW4, pOutW5, pOutW6, pOutW7, pOutW8)
 )
 
 
@@ -566,8 +566,8 @@ tab_tH <- data.frame(
   variables <- c("rest", "age", "bmi", "active"),
   meanObs <- c("69.93", "38.66", "24.11", "91.74"),
   meanTrue <- c("69.60", "38.18", "24.11", "99.05"),
-  tVal <- c(tOutH4, tOutH5, tOutH6, tOutH7),
-  pVal <- c(pOutH4, pOutH5, pOutH6, pOutH7)
+  tValH <- c(tOutH4, tOutH5, tOutH6, tOutH7),
+  pValH <- c(pOutH4, pOutH5, pOutH6, pOutH7)
 )
 
 
@@ -652,12 +652,12 @@ tab_tA <- data.frame(
   variables <- c("rest", "age", "height", "bmi", "weight"),
   meanObs <- c("69.02", "37.96", "174.41","23.83", "72.94"),
   meanTrue <- c("71.03", "39.35", "174.77", "24.85", "79.38"),
-  tVal <- c(tOutA4, tOutA5, tOutA6, tOutA7, tOutA8),
-  pVal <- c(pOutA4, pOutA5, pOutA6, pOutA7, pOutA8)
+  tValA <- c(tOutA4, tOutA5, tOutA6, tOutA7, tOutA8),
+  pValA <- c(pOutA4, pOutA5, pOutA6, pOutA7, pOutA8)
 )
 
 
-kbl(tab_tH, caption = "Difference in means of missingness of active",
+kbl(tab_tA, caption = "Difference in means of missingness of active",
     col.names = c("variables", "$M_{Obs}$", "$M_{True}$", "$t$", "$p$")
     ) %>% 
   kable_classic(full_width = F, html_font = "Cambria")
@@ -738,12 +738,12 @@ tab_tB <- data.frame(
   variables <- c("rest", "age", "height", "active"),
   meanObs <- c("69.84", "38.35", "174.28", "92.12"),
   meanTrue <- c("69.81", "38.90", "175.39", "95.11"),
-  tVal <- c(tOutB4, tOutB5, tOutB6, tOutB7),
-  pVal <- c(pOutB4, pOutB5, pOutB6, pOutB7)
+  tValB <- c(tOutB4, tOutB5, tOutB6, tOutB7),
+  pValB <- c(pOutB4, pOutB5, pOutB6, pOutB7)
 )
 
 
-kbl(tab_tH, caption = "Difference in means of missingness of Height",
+kbl(tab_tB, caption = "Difference in means of missingness of Height",
     col.names = c("variables", "$M_{Obs}$", "$M_{True}$", "$t$", "$p$")
     ) %>% 
   kable_classic(full_width = F, html_font = "Cambria")
