@@ -57,17 +57,17 @@ library(VIM)
 
 # Introduction{#intro}
 
-The matter of interest for this assignment will be the impact that incomplete data (**observed data**) has on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model. 
+The matter of interest for this assignment will be the impact that incomplete data (**observed data**) have on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model. 
 
-Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:obsData) we compare the head of the observed data and the true data. Additionally in \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices. One for the observed data \@ref(tab:corObs) and the other for the true data \@ref(tab:corTrue). 
+Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:obsData) we compare the head of the observed data and the true data. Additionally, in \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices; one for the observed data \@ref(tab:corObs) and the other for the true data \@ref(tab:corTrue). 
 
-Secondly we present our multiple regression model in table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data whereas the following columns reflect the true data.
+Secondly, we present our multiple regression model in table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data, whereas the latter reflect the true data.
 
-The research question we tend to answer in accordance with our model is: *What impact do missing values have on an "active heart rate" model inference?*
+The research question we try to answer in accordance with our model is: *What impact do missing values have on an "active heart rate" model inference?*
 
-Thirldy we start by inspecting the missing values. We try to find out where the missing values occur. In \@ref(fig:misspat) we start by giving a global overview of the missings. Then in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
+Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In \@ref(fig:misspat) we begin by giving a global overview of the missingness. Then, in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
 
-Lastly we perform t-tests on the variables that contain missing values to check what type of missingness we are dealing with, i.e. MNAR, MAR or MCAR. We also provide plots here to visualize where the missing values occur.
+Lastly, we perform t-tests on the variables containing missing values to check the type of missingness, either MNAR, MAR, or MCAR. We also provide plots here to visualize where the missing values occur.
 
 
 
@@ -106,15 +106,15 @@ kbl(data1[1:5,], caption = "True Data") %>%
 
 ## Descriptives{#data1}
 
-Obviously, neither the mean nor the variance of the variables age and rest changed, since they have no missing values. 
+Obviously, neither the mean nor the variance of the variables age and rest changed since they have no missing values. 
 
 The mean of active is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
 
-The mean of height is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30% of the observations). The missing values in height are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
+The mean of height is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30% of the observations). The missing values in height are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
 
-The mean of weight is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 57% of the observations). The missing values in weight are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
+The mean of weight is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 57% of the observations). The missing values in weight are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
 
-The mean of bmi is is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30% of the observations). The missing values in bmi are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
+The mean of bmi is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30% of the observations). The missing values in bmi are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
 
 Furthermore, the variance of the variables age and rest are unaffected in the observed data set. The variance of the variable active in the observed data set is .01 lower than the true data set, and thus almost entirely unaffected. However the variables height, weight, and bmi have greater variance in the true data set than the observed data set. This implies that the missingness causes an underestimation of the variance.
 
@@ -163,7 +163,7 @@ kbl(tab2, caption = "Means and variances in true and observed dataset",
 
 The categorical variables in both data sets are *smoke*, *sex* and *intensity*. *Smoke* and *sex* both have two levels ("no" and "yes" for smoke and "male" and "female" for sex), while *intensity* has three levels ("low", "moderate", and "high"). 
 
-Despite there being differences in amount of observed values between the data sets, differences between groups remain unchanged. There are more males than females in both data sets, as well as more non-smokers than smokers. Also, in both data sets more males reported smoking than females. The most frequent reported workout intensity for both males and females in the two data sets is moderate, followed by low and high.  
+Despite differences in the number of observed values between the data sets, differences between groups remain unchanged. For example, there are more males than females in both data sets and more non-smokers than smokers. Also, in both data sets, more males reported smoking than females. The most frequently reported workout intensity for both males and females in the two data sets is moderate, followed by low and high.  
 
 ```{r cat, results = 'hold', out.width = "50%"}
 tabm4 <- xtabs(~ sex+smoke+intensity, data= data0)
@@ -189,9 +189,9 @@ kbl(list(tabc4, tabc5), caption = "proportion table of categorical in observed  
 
 ## Correlations{#data3}
 
-As shown in Table \@ref(tab:corObs) and Table \@ref(tab:corTrue), the correlations between the variables of the observed data set are slightly different than the correlations between variables of the true data. Although the majority of the correlations are almost identical, a few correlations are negative in the observed data, and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01) albeit almost 0, while the correlation for these variables in the true data set is negative (*r* = -0.05). 
+As shown in Table \@ref(tab:corObs) and Table \@ref(tab:corTrue), the correlations between the variables of the observed data set are slightly different from the correlations between variables of the true data. Although most of the correlations are almost identical, a few correlations are negative in the observed data and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01), albeit almost 0. In contrast, the correlation for these variables in the true data set is negative (*r* = -0.05). 
 
-However, the impact of missing data on the correlations appears to be small, as the difference in correlation coefficients between the two data sets are negligible. Although some correlations differ in valency between the data sets, the correlation coefficients remain close to 0, and thus, not distort inferences made with the observed data set.
+However, the impact of missing data on the correlations appears to be minor, as the difference in correlation coefficients between the two data sets is negligible. Although some correlations differ in valency between the data sets, the correlation coefficients remain close to 0 and thus, do not distort inferences made with the observed data set.
 
 ```{r corObs, results = 'show' }
 dataCor <- data0
@@ -259,11 +259,11 @@ kbl(tab3, caption = "Regression analysis of True (N=306) and Observed Data (N=15
 
 ## Answering the research question
 
-When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error and p-values. The table contains variables with missing values, and an interaction effect. Although almost all beta coefficients are nearly equal, the beta coefficients of the observed data set are systematically underestimated. This is especially the case for *sexfemale*, as the difference between the beta coefficients is almost 9.0. When making inferences, the effect of sex on active heart rate would be underestimated.
+When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error, and p-values. The table contains variables with missing values and an interaction effect. Although almost all beta coefficients are nearly equal, the beta coefficients of the observed data set are systematically underestimated. This underestimation is especially the case for *sexfemale*, as the difference between the beta coefficients is almost 9.0. Making inferences based on the observed data set would lead to underestimating the effect of sex on active hear rate.
 
-Regarding the standard errors, missing data caused these parameters of the observed data set to be systemetically overestimated. Larger standard errors contribute to the possibility of making a type II error, as is the case in our data set. The larger standard errors in the observed data set might have played a role in the variables *sexfemale* and the interaction  *bmi:sexfemale* turning non significant. When making inferences with the model based on the observed data, these variables would wrongly be neglected. 
+Regarding the standard errors, missing data caused these parameters of the observed data set to be systematically overestimated. Larger standard errors contribute to the possibility of making a type II error, as is the case in our data set. For example, the larger standard errors in the observed data set might have played a role in the variables *sexfemale* and the interaction  *bmi:sexfemale* turning non-significant. These variables would wrongly be neglected when making inferences with the model based on the observed data. 
 
-Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non significant, caused by underestimated beta coefficients. The model based on observed data leads thus to inaccurate inferences.
+Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non-significant, caused by underestimated beta coefficients. The model based on observed data leads thus to inaccurate inferences.
 
 
 ---
@@ -273,7 +273,7 @@ Concluding, the missing data causes the standard errors to be greater, resulting
 
 There are 540 missing values. 0 for age, 0 for sex, 0 for intensity, 0 for rest, 58 for smoke, 92 for height, 93 for bmi, 123 for active, and 174 for weight. Moreover, there are 132 completely observed rows, 15 rows with one missing value, 37 rows with two missing values, 52 rows with three missing values, 55 rows with four missing values, 15 rows with five missing values.
 
-The missingness in the data is non-monotone, because the variable with the least missing values (*smoke*) has observed values for other variables with more missingness (e.g., *smoke* and *bmi*). The missingness would be monotone if the variable with the least missing values (*smoke*), would have missing values on all other variables with more missingness (e.g., *height*). Interestingly, a monotone pattern is only the case for *smoke* and *weight*.
+The missingness in the data is non-monotone because the variable with the least missing values (*smoke*) has observed values for other variables with more missingness (e.g., *smoke* and *bmi*). The missingness would be monotone if the variable with the least missing values (*smoke*), would have missing values on all other variables with more missingness (e.g., *height*). Interestingly, a monotone pattern is only the case for *smoke* and *weight*.
 
 
 ```{r misspat, fig.cap = "pattern of the missingness", fig.show='hold', out.width = "50%"}
@@ -346,8 +346,11 @@ data3["mSmoke"] = is.na(data0$smoke)
 
 ## Looking for the missingness
 
-In this section we will investigate whether the mean of the missing values differ significantly from the mean of the observed values. This will be done do by using a paired sampled t-test for the numeric variables. In order to compare the mean of the missing values with the true values, we computed a logical vector for each vector that has missing observations. The missingness vectors have the value `TRUE` for all missing entries and `FALSE` for all observed entries. These missingness vectors will be used as grouping variable in the true data set to compare the missing values with the observed values. 
+In this section, we will investigate whether the mean of the missing values differs significantly from the mean of the observed values. This will be done do by using a paired sampled t-test for the numeric variables. To compare the mean of the missing values with the true values, we computed a logical vector for each vector that has missing observations. The missingness vectors have the value `TRUE` for all missing entries and `FALSE` for all observed entries. These missingness vectors will be used as a grouping variable in the true data set to compare the missing values with the observed values. 
 For smoke, which is a categorical variable, we will use a $x^2$ test. 
+
+For all variables, the missing values have a similar distribution as the observed values. However, the distribution for the variable smoke is not shown, as this is a categorical variable and does thus not have a distribution. The means of the variables from both data sets are marginally different, but the differences are non-significant, neither for smoke. Hence, the missing values are similar to the observed values.
+
 
 ```{r}
 # Doing t-test to calculate whether the difference of the mean in the observed and true dataset is significant
@@ -380,7 +383,7 @@ pOutS <- round(outS$p.value, 3)
 tab_mnar <- data.frame(
   Variables <- c("Weight", "Height", "Bmi", "Active"),
   meanFalse <- c("73.90", "174.50", "24.11", "95.58"),
-  meanTrue <- c("73.17out", "172.83", "23.95", "93.95"),
+  meanTrue <- c("73.17", "172.83", "23.95", "93.95"),
   tstat <- c(tOutW, tOutH, tOutB, tOutA),
   pval <- c(pOutW, pOutH, pOutB, pOutA)
 )
@@ -471,11 +474,11 @@ pOutW8 <- round(outW8$p.value, 3)
 ```
 
 
-Looking at the differences of the missingness of weight in Table \@ref(tab:missW), no significant differences can be found in the means of the numeric variables in the data. However, the difference in mean of `active` is relatively high. It might be that this difference is not significant due to the low amount of observations of `active` when weight is missing ($N$ = 36).
+Looking at the differences of the missingness of weight in Table \@ref(tab:missW), no significant differences can be found in the means of the numeric variables in the data. However, the difference in mean of active is relatively high. It might be that this difference is not significant due to the low amount of observations of active when weight is missing ($N$ = 36).
 
 Considering the categorical data, the missingness of weight on sex has no significant difference, where $x^2 =$ `r cOutW1`, $p =$ `r pOutW1`. For the missingness of weight on smoke no significant difference was found also $x^2 =$ `r cOutW2`, $p =$ `r pOutW2`. Lastly, the missingness of weight on intensity is not significant: $x^2 =$ `r cOutW3`, $p =$ `r pOutW3`.  
 
-All results are insignificant, hence weight is not missing at random. 
+All results are non-significant; hence weight is not missing at random. 
 
 ```{r missW, results='hold'}
 
@@ -499,9 +502,9 @@ kbl(tab_tW, caption = "Difference in means of missingness of Weight",
 
 ---
 
-The three bar plots in Figure \@ref(fig:mar-weight) show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in weight for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the weight column for smokers and non smokers in the smoke column. The third column shows that how lower the intensity is the less missing values in weight you can expect.
+The three bar plots in Figure \@ref(fig:mar-weight) show a visualization of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in weight for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the weight column for smokers and non-smokers in the smoke column. The third column shows that how lower the intensity is the less missing values in weight you can expect.
 
-The five scatterplots in Figure \@ref(fig:mar-weight) show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between weight and rest or age there is a clear trend where all the values with a low weight are missing and everything above that is not. The two plots after that between weight and height or bmi show the same thing, but also a cluster of missing values when both columns have low values. The last column between weight and active shows a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+The five scatterplots in Figure \@ref(fig:mar-weight) show a visualization of how the missing data is divided in the rest of the columns. In the first two plots between weight and rest or age is a clear trend where all the values with a low weight are missing, and everything above that is not. The two plots after that between weight and height or bmi show the same thing, but also a cluster of missing values when both columns have low values. The last column between weight and active shows a clear trend where low values for either column results in missing values with a cluster where both columns have low values.
 
 
 ```{r mar-weight, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of weight is MAR"}
@@ -588,9 +591,9 @@ kbl(tab_tH, caption = "Difference in means of missingness of Height",
 
 ---
 
-The three bar plots in Figure \@ref(fig:mar-height) show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in height for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the height column for smokers and non smokers in the smoke column. The third column shows that there is almost no difference between missing values in the height column for high and moderate intensity, but less missing values in the low intensity category. 
+The three bar plots in Figure \@ref(fig:mar-height) show a visualization of how the missing data in the categorical columns is divided. The first plot shows us almost no difference between missing values in height for being a man or female in the sex column. The second plot also shows virtually no difference between missing values in the height column for smokers and non-smokers in the smoke column. The third column shows almost no difference between missing values in the height column for high and moderate-intensity but less missing values in the low-intensity category. 
 
-The four scatterplots in Figure \@ref(fig:mar-height) show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between height and rest or age there is a clear trend where all the values with a low height are missing and everything above that is not. The two plots after that between height and bmi or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+The four scatterplots in Figure \@ref(fig:mar-height) show how the missing data is divided into the rest of the columns. There is a clear trend in the first two plots between height and rest or age where all the values with a low height are missing and everything above that is not. The two plots after that between height and bmi or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 
 ```{r mar-height, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of height is MAR"}
@@ -678,9 +681,9 @@ kbl(tab_tA, caption = "Difference in means of missingness of active",
 
 ---
 
-The three bar plots in Figure \@ref(fig:mar-active) show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second column shows that that smokers have a bit less missing values than non smokers in the active column. The third column shows that there is almost no difference between missing values in the active column for the moderate and low intensity category, but more missing values in the high intensity category. 
+The three bar plots in Figure \@ref(fig:mar-active) show a visualization of how the missing data in the categorical columns is divided. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second column shows that smokers have fewer missing values than non-smokers in the active column. The third column shows almost no difference between missing values in the active column for the moderate and low-intensity category but more missing values in the high-intensity category. 
 
-The five scatterplots in \@ref(fig:mar-active) show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between active and rest or age there is a clear trend where all the values with a low active are missing and everything above that is not. The three plots after that between active and height, bmi or weight show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+The five scatterplots in \@ref(fig:mar-active) show a visualization of how the missing data is divided into the rest of the columns. In the first two plots between active and rest or age, there is a clear trend where all the values with a low active are missing, and everything above that is not. The three plots after that between active and height, bmi, or weight show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 ```{r mar-active, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of active is MAR"}
 marActive1 <- data3 %>% select(sex, active) %>% spineMiss()
@@ -765,9 +768,9 @@ kbl(tab_tB, caption = "Difference in means of missingness of Height",
 
 ---
 
-The three bar plots in Figure \@ref(fig:mar-bmi) show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in bmi for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the bmi column for smokers and non smokers in the smoke column. The third column shows that there is almost no difference between missing values in the bmi column for the moderate and low intensity category, but more missing values in the high intensity category. 
+The three bar plots in Figure \@ref(fig:mar-bmi) show a visualization of how the missing data in the categorical columns is divided. The first plot shows us almost no difference between missing values in bmi for being a man or female in the sex column. The second plot also indicates practically no difference between missing values in the bmi column for smokers and non-smokers in the smoke column. The third column shows almost no difference between missing values in the bmi column for the moderate and low-intensity category, but more missing values in the high-intensity category.
 
-The four scatterplots  in Figure \@ref(fig:mar-bmi) show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between bmi and rest or age there is a clear trend where all the values with a low bmi are missing and everything above that is not. The two plots after that between bmi and height or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+The four scatterplots  in Figure \@ref(fig:mar-bmi) show a visualization of how the missing data is divided into the rest of the columns. In the first two plots between bmi and rest or age there is a clear trend where all the values with a low bmi are missing and everything above that is not. The two plots after that between bmi and height or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 
 ```{r mar-bmi, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of bmi is MAR"}
@@ -853,7 +856,7 @@ kbl(tab_tS, caption = "Difference in means of missingness of Smoke",
 ---
 
 
-The seven bar plots show a visualisation of how the missing data of smoke is divided in the other columns. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second plot shows that there is almost no difference between missing values in the intensity column for the high and low category, but less missing values in the moderate intensity category. The third plot shows that the missingness of smoke on rest is equally divided with two spikes where rest is lower than 55 and higher than 90. There is no more missing values after these spikes, except for one more spike where rest is 40. The forth plot shows that the missingness of smoke on age is equally divided with a spike where age is higher than 60. The fifth plot shows how smaller or higher (than a hight of 170-175) the hight gets te more missing values there are in the smoke column. Except for when the hight is around 205. Then there are close to no missing values. The sixth plot shows that the missingness of smoke on bmi is equally divided except for when bmi is on its lowest or highest. Then there are almost no missing values. The seventh plot shows that the missingness of smoke on weight is equally divided with one spike in the middle between a weight of 70 and 80. When weight is at its lowest or highest there are almost no missing values.
+The seven-bar plots show how the missing data of smoke is divided into the other columns. The first plot shows us that the female category in sex has fewer missing values in the active column than the male category. The second plot shows almost no difference between missing values in the intensity column for the high and low category, but fewer missing values in the moderate-intensity category. The third plot shows that the missingness of smoke on rest is equally divided with two spikes where rest is lower than 55 and higher than 90. There are no more missing values after these spikes, except for one more spike where the rest is 40. The fourth plot shows that the missingness of smoke on age is equally divided with a spike where age is higher than 60. The fifth plot shows how smaller or higher (than a height of 170-175) the height gets, the more missing values there are in the smoke column, except for when the height is around 205. Then there are close to no missing values. The sixth plot shows that the missingness of smoke on bmi is equally divided except for when bmi is at its lowest or highest. Then there are almost no missing values. The seventh plot shows that the missingness of smoke on weight is equally divided, with one spike in the middle between weight of 70 and 80. There are almost no missing values when weight is at its lowest or highest.
 
 
 ```{r mar-smoke, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of smoking is MAR"}
