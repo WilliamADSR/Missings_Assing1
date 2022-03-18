@@ -221,7 +221,7 @@ kbl(cor2, caption = "Correlations of true data") %>%
 ```
 
 
-
+---
 
 
 # Regression{#data4}
@@ -283,8 +283,6 @@ gg_miss_var(data0)
 gg_miss_case(data0)
 ```
 
----
-
 ```{r, include = TRUE}
 for (i in data0$weight) {
   if (is.na(data0$weight[i])) {
@@ -297,7 +295,6 @@ for (i in data0$weight) {
 }
 ```
 
---- 
 
 
 
@@ -473,6 +470,13 @@ pOutW8 <- round(outW8$p.value, 3)
 
 ```
 
+
+Looking at the differences of the missingness of weight in Table \@ref(tab:missW), no significant differences can be found in the means of the numeric variables in the data. However, the difference in mean of `active` is relatively high. It might be that this difference is not significant due to the low amount of observations of `active` when weight is missing ($N$ = 36).
+
+Considering the categorical data, the missingness of weight on sex has no significant difference, where $x^2 =$ `r cOutW1`, $p =$ `r pOutW1`. For the missingness of weight on smoke no significant difference was found also $x^2 =$ `r cOutW2`, $p =$ `r pOutW2`. Lastly, the missingness of weight on intensity is not significant: $x^2 =$ `r cOutW3`, $p =$ `r pOutW3`.  
+
+All results are insignificant, hence weight is not missing at random. 
+
 ```{r missW, results='hold'}
 
 tab_tW <- data.frame(
@@ -492,13 +496,12 @@ kbl(tab_tW, caption = "Difference in means of missingness of Weight",
 
 ```
 
-missing weight on sex: $x^2 =$ `r cOutW1`, $p =$ `r pOutW1`
 
-missing weight on smoke: $x^2 =$ `r cOutW2`, $p =$ `r pOutW2`
+---
 
-missing weight on intensity: $x^2 =$ `r cOutW3`, $p =$ `r pOutW3`
+The three bar plots in Figure \@ref(fig:mar-weight) show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in weight for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the weight column for smokers and non smokers in the smoke column. The third column shows that how lower the intensity is the less missing values in weight you can expect.
 
-
+The five scatterplots in Figure \@ref(fig:mar-weight) show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between weight and rest or age there is a clear trend where all the values with a low weight are missing and everything above that is not. The two plots after that between weight and height or bmi show the same thing, but also a cluster of missing values when both columns have low values. The last column between weight and active shows a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 
 ```{r mar-weight, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of weight is MAR"}
@@ -521,11 +524,8 @@ marWeight7
 marWeight8
 ```
 
-Looking at the p value of the missingness of weight on the other columns we can say that there is not a significant relation between any of the columns and the missing values of weight.
+---
 
-The three bar plots show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in weight for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the weight column for smokers and non smokers in the smoke column. The third column shows that how lower the intensity is the less missing values in weight you can expect.
-
-The five scatterplots show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between weight and rest or age there is a clear trend where all the values with a low weight are missing and everything above that is not. The two plots after that between weight and height or bmi show the same thing, but also a cluster of missing values when both columns have low values. The last column between weight and active shows a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 ## Missingness of height{#missH}
 
@@ -560,6 +560,13 @@ pOutH7 <- round(outH7$p.value, 3)
 ```
 
 
+Looking at the differences of the missingness of height in Table \@ref(tab:missH), no significant differences can be found in the means of the numeric variables in the data. Similar to the missingness of weight, the difference in mean of `active` is relatively high. Again, it might be that this difference is not significant due to the low amount of observations of `active` when height is missing ($N$ = 40).
+
+Considering the categorical data, the missingness of height on sex has no significant difference, where $x^2 =$ `r cOutH1`, $p =$ `r pOutH1`. For the missingness of height on smoke no significant difference was found also $x^2 =$ `r cOutH2`, $p =$ `r pOutH2`. Lastly, the missingness of weight on intensity is not significant: $x^2 =$ `r cOutH3`, $p =$ `r pOutH3`.  
+
+All results are insignificant, hence height is not missing at random. 
+
+
 ```{r missH, results='hold'}
 
 tab_tH <- data.frame(
@@ -578,12 +585,12 @@ kbl(tab_tH, caption = "Difference in means of missingness of Height",
 
 
 ```
-missing height on sex: $x^2 =$ `r cOutH1`, $p =$ `r pOutH1`
 
-missing height on smoke: $x^2 =$ `r cOutH2`, $p =$ `r pOutH2`
+---
 
-missing height on intensity: $x^2 =$ `r cOutH3`, $p =$ `r pOutH3`
+The three bar plots in Figure \@ref(fig:mar-height) show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in height for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the height column for smokers and non smokers in the smoke column. The third column shows that there is almost no difference between missing values in the height column for high and moderate intensity, but less missing values in the low intensity category. 
 
+The four scatterplots in Figure \@ref(fig:mar-height) show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between height and rest or age there is a clear trend where all the values with a low height are missing and everything above that is not. The two plots after that between height and bmi or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 
 ```{r mar-height, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of height is MAR"}
@@ -604,11 +611,7 @@ marHeight6
 marHeight7
 ```
 
-Looking at the p value of the missingness of height on the other columns we can say that there is not a significant relation between any of the columns and the missing values of height.
-
-The three bar plots show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in height for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the height column for smokers and non smokers in the smoke column. The third column shows that there is almost no difference between missing values in the height column for high and moderate intensity, but less missing values in the low intensity category. 
-
-The four scatterplots show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between height and rest or age there is a clear trend where all the values with a low height are missing and everything above that is not. The two plots after that between height and bmi or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+---
 
 ## Missingness of Active
 
@@ -646,6 +649,14 @@ tOutA8 <- round(outA8$statistic, 3)
 pOutA8 <- round(outA8$p.value, 3)
 ```
 
+Looking at the differences of the missingness of active in Table \@ref(tab:missA), no significant differences can be found in the means of the numeric variables in the data. However, both `bmi` ($p =$ `r pOutA7`) and `weight` ($p =$ `r pOutA8`) are relatively close to the significance threshold of 0.05. 
+
+Considering the categorical data, the missingness of active on sex has no significant difference, where $x^2 =$ `r cOutA1`, $p =$ `r pOutA1`. For the missingness of active on smoke no significant difference was found also $x^2 =$ `r cOutA2`, $p =$ `r pOutA2`. Lastly, the missingness of weight on intensity is not significant: $x^2 =$ `r cOutA3`, $p =$ `r pOutA3`.  
+
+All results are insignificant, hence active is not considered to be missing at random. 
+
+
+
 ```{r missA, results='hold'}
 
 tab_tA <- data.frame(
@@ -664,13 +675,12 @@ kbl(tab_tA, caption = "Difference in means of missingness of active",
 
 
 ```
-missing active on sex: $x^2 =$ `r cOutA1`, $p =$ `r pOutA1`
 
-missing active on smoke: $x^2 =$ `r cOutA2`, $p =$ `r pOutA2`
+---
 
-missing active on intensity: $x^2 =$ `r cOutA3`, $p =$ `r pOutA3`
+The three bar plots in Figure \@ref(mar-active) show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second column shows that that smokers have a bit less missing values than non smokers in the active column. The third column shows that there is almost no difference between missing values in the active column for the moderate and low intensity category, but more missing values in the high intensity category. 
 
-
+The five scatterplots in \@ref(mar-active) show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between active and rest or age there is a clear trend where all the values with a low active are missing and everything above that is not. The three plots after that between active and height, bmi or weight show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
 ```{r mar-active, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of active is MAR"}
 marActive1 <- data3 %>% select(sex, active) %>% spineMiss()
@@ -692,11 +702,7 @@ marActive7
 marActive8
 ```
 
-Looking at the p value of the missingness of active on the other columns we can say that there is not a significant relation between any of the columns and the missing values of active.
-
-The three bar plots show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second column shows that that smokers have a bit less missing values than non smokers in the active column. The third column shows that there is almost no difference between missing values in the active column for the moderate and low intensity category, but more missing values in the high intensity category. 
-
-The five scatterplots show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between active and rest or age there is a clear trend where all the values with a low active are missing and everything above that is not. The three plots after that between active and height, bmi or weight show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+---
 
 ## Missingness of Bmi{#missB}
 
@@ -731,6 +737,12 @@ tOutB7 <- round(outB7$statistic, 3)
 pOutB7 <- round(outB7$p.value, 3)
 ```
 
+Looking at the differences of the missingness of bmi in Table \@ref(tab:missB), no significant differences can be found in the means of the numeric variables in the data. 
+
+Considering the categorical data, the missingness of bmi on sex has no significant difference, where $x^2 =$ `r cOutB1`, $p =$ `r pOutB1`. For the missingness of bmi on smoke no significant difference was found also $x^2 =$ `r cOutB2`, $p =$ `r pOutB2`. Lastly, the missingness of bmi on intensity is not significant: $x^2 =$ `r cOutB3`, $p =$ `r pOutB3`.  
+
+All results are insignificant, hence bmi is considered not to be missing at random. 
+
 
 ```{r missB, results='hold'}
 
@@ -750,19 +762,13 @@ kbl(tab_tB, caption = "Difference in means of missingness of Height",
 
 
 ```
-missing bmi on sex: $x^2 =$ `r cOutB1`, $p =$ `r pOutB1`
 
-missing bmi on smoke: $x^2 =$ `r cOutB2`, $p =$ `r pOutB2`
+---
 
-missing bmi on intensity: $x^2 =$ `r cOutB3`, $p =$ `r pOutB3`
+The three bar plots in Figure \@ref(fig:mar-bmi) show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in bmi for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the bmi column for smokers and non smokers in the smoke column. The third column shows that there is almost no difference between missing values in the bmi column for the moderate and low intensity category, but more missing values in the high intensity category. 
 
-missing bmi on rest: $t =$ `r tOutB4`, $p =$ `r pOutB4`
+The four scatterplots  in Figure \@ref(fig:mar-bmi) show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between bmi and rest or age there is a clear trend where all the values with a low bmi are missing and everything above that is not. The two plots after that between bmi and height or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
 
-missing bmi on age: $t =$ `r tOutB5`, $p =$ `r pOutB5`
-
-missing bmi on height: $t =$ `r tOutB6`, $p =$ `r pOutB6`
-
-missing bmi on active: $t =$ `r tOutB7`, $p =$ `r pOutB7`
 
 ```{r mar-bmi, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of bmi is MAR"}
 marBmi1 <- data3 %>% select(sex, bmi) %>% spineMiss()
@@ -783,13 +789,7 @@ marBmi6
 marBmi7
 ```
 
-Looking at the p value of the missingness of bmi on the other columns we can say that there is not a significant relation between any of the columns and the missing values of bmi.
-
-The three bar plots show a visualisation of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in bmi for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the bmi column for smokers and non smokers in the smoke column. The third column shows that there is almost no difference between missing values in the bmi column for the moderate and low intensity category, but more missing values in the high intensity category. 
-
-The *four/five* scatterplots show a visualisation of how the missing data is divided in the rest of the columns. In the first two plots between bmi and rest or age there is a clear trend where all the values with a low bmi are missing and everything above that is not. The two plots after that between bmi and height or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
-
-Missing a fifth scatterplot??? (weight)
+---
 
 ## Missingness of Smoke{#MissS}
 
@@ -825,21 +825,35 @@ pOutS7 <- round(outS7$p.value, 3)
 
 ```
 
-missing smoke on sex: $x^2 =$ `r cOutS1`, $p =$ `r pOutS1`
+Looking at the differences of the missingness of smoke in Table \@ref(tab:missS), no significant differences can be found in the means of the numeric variables in the data.
 
-missing smoke on intensity: $x^2 =$ `r cOutS2`, $p =$ `r pOutS2`
+Considering the categorical data, the missingness of weight on sex has a significant difference, where $x^2 =$ `r cOutS1`, $p =$ `r pOutS1`. The missingness of smoke on intensity is not significant: $x^2 =$ `r cOutS2`, $p =$ `r pOutS2`.  
 
-missing smoke on rest: $t =$ `r tOutS3`, $p =$ `r pOutS3`
+The results indicate that missingness of smoke is missing at random in relation with sex. 
 
-missing smoke on age: $t =$ `r tOutS4`, $p =$ `r pOutS4`
+```{r missS, results='hold'}
 
-missing smoke on height: $t =$ `r tOutS5`, $p =$ `r pOutS5`
+tab_tS <- data.frame(
+  variables <- c("rest", "age", "height", "bmi", "weight"),
+  meanObs <- c("70.08", "38.03", "174.41", "24.00", "73.74"),
+  meanTrue <- c("68.72", "40.57", "175.12", "24.85", "76.13"),
+  tValS <- c(tOutS3, tOutS4, tOutS5, tOutS6, tOutS7),
+  pValS <- c(pOutS3, pOutS4, pOutS5, pOutS6, pOutS7)
+)
 
-missing smoke on bmi: $t =$ `r tOutS6`, $p =$ `r pOutS6`
 
-missing smoke on weight: $t =$ `r tOutS7`, $p =$ `r pOutS7`
+kbl(tab_tS, caption = "Difference in means of missingness of Smoke",
+    col.names = c("variables", "$M_{Obs}$", "$M_{True}$", "$t$", "$p$")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
 
 
+```
+
+---
+
+
+The seven bar plots show a visualisation of how the missing data of smoke is divided in the other columns. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second plot shows that there is almost no difference between missing values in the intensity column for the high and low category, but less missing values in the moderate intensity category. The third plot shows that the missingness of smoke on rest is equally divided with two spikes where rest is lower than 55 and higher than 90. There is no more missing values after these spikes, except for one more spike where rest is 40. The forth plot shows that the missingness of smoke on age is equally divided with a spike where age is higher than 60. The fifth plot shows how smaller or higher (than a hight of 170-175) the hight gets te more missing values there are in the smoke column. Except for when the hight is around 205. Then there are close to no missing values. The sixth plot shows that the missingness of smoke on bmi is equally divided except for when bmi is on its lowest or highest. Then there are almost no missing values. The seventh plot shows that the missingness of smoke on weight is equally divided with one spike in the middle between a weight of 70 and 80. When weight is at its lowest or highest there are almost no missing values.
 
 
 ```{r mar-smoke, echo=FALSE, fig.show='hold', out.width = "50%", fig.cap = "Looking whether the missingness of smoking is MAR"}
@@ -861,8 +875,6 @@ marSmoke6
 marSmoke7
 
 ```
-Looking at the p value of the missingness of smoke on the other columns we can say that there is only one significant relation between the missing values of smoke on sex. 
 
-The seven bar plots show a visualisation of how the missing data of smoke is divided in the other columns. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second plot shows that there is almost no difference between missing values in the intensity column for the high and low category, but less missing values in the moderate intensity category. The third plot shows that the missingness of smoke on rest is equally divided with two spikes where rest is lower than 55 and higher than 90. There is no more missing values after these spikes, except for one more spike where rest is 40. The forth plot shows that the missingness of smoke on age is equally divided with a spike where age is higher than 60. The fifth plot shows how smaller or higher (than a hight of 170-175) the hight gets te more missing values there are in the smoke column. Except for when the hight is around 205. Then there are close to no missing values. The sixth plot shows that the missingness of smoke on bmi is equally divided except for when bmi is on its lowest or highest. Then there are almost no missing values. The seventh plot shows that the missingness of smoke on weight is equally divided with one spike in the middle between a weight of 70 and 80. When weight is at its lowest or highest there are almost no missing values.
 
 
