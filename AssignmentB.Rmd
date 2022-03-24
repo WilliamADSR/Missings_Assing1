@@ -44,6 +44,9 @@ stripplot(imp)
 - verhaaltje over wat we gaan doen
 - daadwerkelijk naive imputatie doen
 - imputatie beschrijven (de plots o.a.)
-- data invullen n.a.v. imputattie
+- data invullen n.a.v. imputatie
 - data beschrijven
 - aangeven wat we willen veranderen voor assignment C
+
+
+After observing the data for missing values, we now use the package mice to impute the missing values. For imputation, we will use the default settings. After imputation, we ... to assess whether the imputations are valid and have a sensible convergence by observing statistics and plots. 
