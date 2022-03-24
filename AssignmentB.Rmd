@@ -1,6 +1,6 @@
 ---
 title: "AssignmentB"
-author: "Martijn Koster"
+author: "Martijn Koster, William Schaafsma, Martijn van Dam, Victor Hovius"
 date: "3/21/2022"
 output: html_document
 ---
@@ -9,4 +9,35 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(mice)
+```
+
+```{r}
+data0 <- readRDS("incomplete_data_g1.rds")
+```
+
+
+```{r}
+pred <- mice(data0, maxit = 0)$predictorMatrix
+
+meth <- mice(data0, maxit = 0)$method
+
+meth["weight"] <- "~ I(bmi * (height / 100)^2)"
+
+pred[c("height", "bmi"), "weight"] <- 0
+```
+
+```{r}
+imp <- mice(data0, 
+            m = 5, 
+            maxit =  15,
+            predictorMatrix = pred,
+            method = meth,
+            seed = 26011994,
+            print = FALSE)
+plot(imp)
+densityplot(imp)
+stripplot(imp)
+```
 
