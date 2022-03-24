@@ -41,3 +41,9 @@ densityplot(imp)
 stripplot(imp)
 ```
 
+- verhaaltje over wat we gaan doen
+- daadwerkelijk naive imputatie doen
+- imputatie beschrijven (de plots o.a.)
+- data invullen n.a.v. imputattie
+- data beschrijven
+- aangeven wat we willen veranderen voor assignment C
