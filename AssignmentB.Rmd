@@ -2,20 +2,105 @@
 title: "AssignmentB"
 author: "Martijn Koster, William Schaafsma, Martijn van Dam, Victor Hovius"
 date: "3/21/2022"
-output: html_document
+output: pdf_document
 ---
 
+
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 28px;
+  }
+h1 { /* Header 1 */
+  font-size: 22px;
+  }
+h2 { /* Header 2 */
+    font-size: 18px;
+  }
+h3 { /* Header 3 */
+  font-size: 14px;
+  font-family: "Times New Roman", Times, serif;
+  }
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, comment = NA, warning = FALSE,
+                      error=FALSE, results='hide',fig.keep='all')
 ```
 
-```{r}
+---
+
+```{r, include=FALSE}
 library(mice)
-```
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+library(knitr)
+library(kableExtra)
+``` 
 
 ```{r}
 data0 <- readRDS("incomplete_data_g1.rds")
 ```
+
+- verhaaltje over wat we gaan doen
+- daadwerkelijk naive imputatie doen
+- imputatie beschrijven (de plots o.a.)
+- data invullen n.a.v. imputatie
+- data beschrijven
+- aangeven wat we willen veranderen voor assignment C
+
+# Imputations{#Imp}
+
+After observing the data for missing values, we now try to solve the missingness problem by doing multiple imputation with the package `mice`. In first instance we will use the default settings to impute the missingness, this will be further elaborated in the [Default Imputations](#defImp) section. After the the default imputations we will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. This will be done in the [Evaluating Default Imputations](#evalImp) section. After evaluating the default imputations, we will make an outline of how the imputations can be improved, by using more sophisticated imputations. This will be discussed in the [Improving the Imputations](#improveImp) section.    
+
+
+## Default Imputations{#defImp}
+```{r}
+pred <- mice(data0)$predictorMatrix
+meth <- mice(data0)$method
+m <- mice(data0)$m
+maxit <- mice(data0)$maxit
+```
+
+```{r}
+methW <- meth["weight"]
+methH <- meth["height"]
+methB <- meth["bmi"]
+methA <- meth["active"]
+methS <- meth["smoke"]
+```
+
+As mentioned before we will first use the default settings of `mice` to impute the missingness. In this section we will describe these settings.  
+
+
+
+```{r predImp, results='hold'}
+kbl(pred, caption = "Predictor Matrix of Default Imputations") %>% 
+  kable_classic(full_width = FALSE, html_font = "Cambria" )
+```
+
+## Evaluating Default Imputations{#evalImp}
+
+
+## Improving the Imputations{#improveImp}
+
 
 
 ```{r}
@@ -41,12 +126,3 @@ densityplot(imp)
 stripplot(imp)
 ```
 
-- verhaaltje over wat we gaan doen
-- daadwerkelijk naive imputatie doen
-- imputatie beschrijven (de plots o.a.)
-- data invullen n.a.v. imputatie
-- data beschrijven
-- aangeven wat we willen veranderen voor assignment C
-
-
-After observing the data for missing values, we now use the package mice to impute the missing values. For imputation, we will use the default settings. After imputation, we ... to assess whether the imputations are valid and have a sensible convergence by observing statistics and plots. 
