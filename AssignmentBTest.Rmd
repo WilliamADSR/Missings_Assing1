@@ -1,0 +1,191 @@
+---
+title: "AssignmentB"
+author: "Martijn Koster, William Schaafsma, Martijn van Dam, Victor Hovius"
+date: "3/21/2022"
+output: 
+  bookdown::pdf_document2: default
+---
+
+<style type="text/css">
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+td {  /* Table  */
+  font-size: 12px;
+}
+h1.title {
+  font-size: 28px;
+  }
+h1 { /* Header 1 */
+  font-size: 22px;
+  }
+h2 { /* Header 2 */
+    font-size: 18px;
+  }
+h3 { /* Header 3 */
+  font-size: 14px;
+  font-family: "Times New Roman", Times, serif;
+  }
+code.r{ /* Code block */
+    font-size: 12px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 14px;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, comment = NA, warning = FALSE,
+                      error=FALSE, results='hide',fig.keep='all')
+```
+
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+``` 
+
+
+# Introduction{#intro}
+
+The matter of interest for this assignment will be the impact that incomplete data (**observed data**) have on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model. 
+
+Firstly, we provide descriptive statistics and correlations. In Table \@ref(tab:obsData1) and Table \@ref(tab:obsData2) we compare the head of the observed data and the true data. Additionally, in Table \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices; one for the observed data in Table \@ref(tab:corObs) and the other for the true data in Table \@ref(tab:corTrue). 
+
+Secondly, we present our multiple regression model in Table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data, whereas the latter reflect the true data.
+
+The research question we try to answer in accordance with our model is: *What impact do missing values have on an "active heart rate" model inference?*
+
+Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In \@ref(fig:misspat) we begin by giving a global overview of the missingness. Then, in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
+
+Lastly, we perform t-tests on the variables containing missing values to check the type of missingness, either MNAR, MAR, or MCAR. We also provide plots here to visualize where the missing values occur.
+
+```{r}
+data0 <- readRDS("incomplete_data_g1.rds") # load incomoplete
+data1 <- readRDS("complete_data.rds")
+```
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+library(knitr)
+library(kableExtra)
+``` 
+
+
+# Observed vs True data{#data}
+
+In this section we will compare the observed with the true data set. 
+
+```{r obsData1, results='hold'}
+kbl(data0[1:5,], caption = "First Five Cases of Observed Data", booktabs = T) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+```{r obsData2, results='hold'}
+kbl(data1[1:5,], caption = "First Five Cases of True Data", booktabs = T) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+
+## Descriptives{#data1}
+
+Obviously, neither the mean nor the variance of the variables age and rest changed since they have no missing values. 
+
+The mean of active is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 40% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
+
+The mean of height is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30% of the observations). The missing values in height are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
+
+The mean of weight is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 57% of the observations). The missing values in weight are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
+
+The mean of bmi is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30% of the observations). The missing values in bmi are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
+
+Furthermore, the variance of the variables age and rest are unaffected in the observed data set. The variance of the variable active in the observed data set is .01 lower than the true data set, and thus almost entirely unaffected. However the variables height, weight, and bmi have greater variance in the true data set than the observed data set. This implies that the missingness causes an underestimation of the variance.
+
+
+
+```{r}
+tab2 <- data.frame(
+  variables <- c("Age", "Active", "Rest", "Height", 
+                 "Weight", "Bmi"),
+  meanObs <-  c("38.52", "92.58", "69.83", "174.50",
+                "73.91", "24.11"),
+  meanTrue <- c("38.52", "93.13", "69.83", "173.99",
+                "73.58", "24.06"),
+  varObs <- c("149.73", "383.05", "120.78", "100.66",
+              "260.26", "12.91"),
+  varTrue <- c("149.73", "383.04", "120.78", "105.29",
+              "274.85", "13.38"),
+  nObs <- c("306", "183", "306", "214", "132", "213"),
+  nTrue <- c("306", "306", "306", "306", "306", "306")
+)
+```
+
+
+```{r des, results='hold'}
+kbl(tab2, caption = "Means and variances in true and observed dataset",
+    booktabs = T,
+    col.names = c("Variables", "M obs", "M true", 
+                "var obs", "var true", "N obs", "N true")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  footnote(
+    general_title = "Note.",
+    general = "obs = Observed Dataset, true = True Dataset")
+```
+
+
+```{r cat1, results = 'hold'}
+tabm4 <- xtabs(~ sex+smoke+intensity, data= data0)
+tabc4 <- round(prop.table(tabm4), 3)
+
+tabm5 <- xtabs(~ sex+smoke+intensity, data= data1)
+tabc5 <- round(prop.table(tabm5), 3)
+
+
+kbl(tabc4, caption = "proportion table of categorical in observed  and true data",
+    booktabs = T
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+    footnote(
+    general_title = "Note.",
+    general = "On the left side of the table the proportions of the observed
+    data are shown, whereas the proportions of the true data are represented 
+    on the right side of the table.", footnote_as_chunk = TRUE)
+
+
+
+
+```
+
+```{r cat2, results='hold'}
+kbl(tabc5, caption = "proportion table of categorical in observed  and true data",
+    booktabs = T
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+    footnote(
+    general_title = "Note.",
+    general = "On the left side of the table the proportions of the observed
+    data are shown, whereas the proportions of the true data are represented 
+    on the right side of the table.", footnote_as_chunk = TRUE)
+
+```
+
+## Categorical variables{#data2}
+
+The categorical variables in both data sets are *smoke*, *sex* and *intensity*. *Smoke* and *sex* both have two levels ("no" and "yes" for smoke and "male" and "female" for sex), while *intensity* has three levels ("low", "moderate", and "high"). 
+
+Despite differences in the number of observed values between the data sets, differences between groups remain unchanged. For example, there are more males than females in both data sets and more non-smokers than smokers. Also, in both data sets, more males reported smoking than females. The most frequently reported workout intensity for both males and females in the two data sets is moderate, followed by low and high.  
