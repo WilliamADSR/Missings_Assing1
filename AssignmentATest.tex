@@ -105,15 +105,15 @@
 \hypertarget{intro}{%
 \section{Introduction}\label{intro}}
 
-The matter of interest for this assignment will be the impact that incomplete data (\textbf{observed data}) have on our inferences compared to the inferences we make with complete data (\textbf{true data}). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model.
+The matter of interest for this assignment will be the impact that incomplete data (**observed data**) have on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a multiple regression model. 
 
-Firstly, we provide descriptive statistics and correlations. In table \ref{tab:obsData} we compare the head of the observed data and the true data. Additionally, in \ref{tab:des} the means and variances are compared. With regard to correlations, we present two correlations matrices; one for the observed data \ref{tab:corObs} and the other for the true data \ref{tab:corTrue}.
+Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:obsData) we compare the head of the observed data and the true data. Additionally, in \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices; one for the observed data \@ref(tab:corObs) and the other for the true data \@ref(tab:corTrue). 
 
-Secondly, we present our multiple regression model in table \ref{tab:reg}. Our model consists of the outcome variable: \emph{active heart rate} and the predictors: \emph{age} and \emph{smoke}. We also included an interaction effect between \emph{bmi} and \emph{sex}. The first three columns reflect the observed data, whereas the latter reflect the true data.
+Secondly, we present our multiple regression model in table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data, whereas the latter reflect the true data.
 
-The research question we try to answer in accordance with our model is: \emph{What impact do missing values have on an ``active heart rate'' model inference?}
+The research question we try to answer in accordance with our model is: *What influence does a person's age, smoking habits, sex and bmi have on their heart rate during excercise?*
 
-Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In \ref{fig:misspat} we begin by giving a global overview of the missingness. Then, in \ref{fig:mnar-plot} we compare the distributions for the observed data and the missing values.
+Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In \@ref(fig:misspat) we begin by giving a global overview of the missingness. Then, in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
 
 Lastly, we perform t-tests on the variables containing missing values to check the type of missingness, either MNAR, MAR, or MCAR. We also provide plots here to visualize where the missing values occur.
 
@@ -171,17 +171,11 @@ age & smoke & sex & intensity & active & rest & height & weight & bmi\\
 \hypertarget{data1}{%
 \subsection{Descriptives}\label{data1}}
 
-Obviously, neither the mean nor the variance of the variables age and rest changed since they have no missing values.
+The means and the variance of the variables age and rest remain unchanged, as they have no missing values. 
 
-The mean of active is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 40\% of the observations). The missing values in active are MCAR, so we would not expect any substantial changes in the marginal distribution of active.
+The means of the variables active, weight, and bmi are somewhat higher for the observed data set compared to the true data set. For height, the mean of the observed data set is somewhat smaller compared to the true data set.
 
-The mean of height is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30\% of the observations). The missing values in height are MCAR, so we would not expect any substantial changes in the marginal distribution of height.
-
-The mean of weight is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 57\% of the observations). The missing values in weight are MCAR, so we would not expect any substantial changes in the marginal distribution of weight.
-
-The mean of bmi is also almost entirely unaffected. The variance of active changed a bit in the observed data, but this difference is simply due to sampling variability (we have deleted about 30\% of the observations). The missing values in bmi are MCAR, so we would not expect any substantial changes in the marginal distribution of bmi.
-
-Furthermore, the variance of the variables age and rest are unaffected in the observed data set. The variance of the variable active in the observed data set is .01 lower than the true data set, and thus almost entirely unaffected. However the variables height, weight, and bmi have greater variance in the true data set than the observed data set. This implies that the missingness causes an underestimation of the variance.
+Furthermore, the variance of the variable active in the observed data set is .01 lower than the true data set, and thus almost entirely unaffected. However the variables height, weight, and bmi have greater variance in the true data set than the observed data set. This implies that the missingness causes an underestimation of the variance.
 
 \begin{table}
 
@@ -405,7 +399,7 @@ The missingness in the data is non-monotone because the variable with the least 
 \hypertarget{looking-for-the-missingness}{%
 \subsection{Looking for the missingness}\label{looking-for-the-missingness}}
 
-In this section, we will investigate whether the mean of the missing values differs significantly from the mean of the observed values. This will be done do by using a paired sampled t-test for the numeric variables. To compare the mean of the missing values with the true values, we computed a logical vector for each vector that has missing observations. The missingness vectors have the value \texttt{TRUE} for all missing entries and \texttt{FALSE} for all observed entries. These missingness vectors will be used as a grouping variable in the true data set to compare the missing values with the observed values.
+In this section, we will investigate whether the means of the missing values differ significantly from the means of the observed values. This will be done by a paired sampled t-test for the numeric variables. To compare the mean of the missing values with the true values, we computed a logical vector for each vector that has missing observations. The missingness vectors have the value \texttt{TRUE} for all missing entries and \texttt{FALSE} for all observed entries. These missingness vectors will be used as a grouping variable in the true data set to compare the missing values with the observed values.
 For smoke, which is a categorical variable, we will use a \(x^2\) test.
 
 For all variables, the missing values have a similar distribution as the observed values. However, the distribution for the variable smoke is not shown, as this is a categorical variable and does thus not have a distribution. The means of the variables from both data sets are marginally different, but the differences are non-significant, neither for smoke. Hence, the missing values are similar to the observed values.
@@ -444,7 +438,7 @@ Looking at the differences of the missingness of weight in Table \ref{tab:missW}
 
 Considering the categorical data, the missingness of weight on sex has no significant difference, where \(x^2 =\) 0, \(p =\) 1. For the missingness of weight on smoke no significant difference was found also \(x^2 =\) 0.036, \(p =\) 0.848. Lastly, the missingness of weight on intensity is not significant: \(x^2 =\) 2.589, \(p =\) 0.274.
 
-All results are non-significant; hence weight is not missing at random.
+All results are non-significant; hence weight is missing completely at random, and, thus, also missing at random.
 
 \begin{table}
 
@@ -486,7 +480,7 @@ Looking at the differences of the missingness of height in Table \ref{tab:missH}
 
 Considering the categorical data, the missingness of height on sex has no significant difference, where \(x^2 =\) 0, \(p =\) 1. For the missingness of height on smoke no significant difference was found also \(x^2 =\) 0.111, \(p =\) 0.739. Lastly, the missingness of weight on intensity is not significant: \(x^2 =\) 3.563, \(p =\) 0.168.
 
-All results are insignificant, hence height is not missing at random.
+All results are non-significant, hence height is missing completely at random; and, thus, also missing at random.
 
 \begin{table}
 
@@ -526,7 +520,7 @@ Looking at the differences of the missingness of active in Table \ref{tab:missA}
 
 Considering the categorical data, the missingness of active on sex has no significant difference, where \(x^2 =\) 1.957, \(p =\) 0.162. For the missingness of active on smoke no significant difference was found also \(x^2 =\) 0.293, \(p =\) 0.589. Lastly, the missingness of weight on intensity is not significant: \(x^2 =\) 2.193, \(p =\) 0.334.
 
-All results are insignificant, hence active is not considered to be missing at random.
+All results are non-significant, hence active is considered to be missing completely at random; and, thus, also missing at random.
 
 \begin{table}
 
@@ -568,7 +562,7 @@ Looking at the differences of the missingness of bmi in Table \ref{tab:missB}, n
 
 Considering the categorical data, the missingness of bmi on sex has no significant difference, where \(x^2 =\) 0.019, \(p =\) 0.889. For the missingness of bmi on smoke no significant difference was found also \(x^2 =\) 0, \(p =\) 1. Lastly, the missingness of bmi on intensity is not significant: \(x^2 =\) 1.476, \(p =\) 0.478.
 
-All results are insignificant, hence bmi is considered not to be missing at random.
+All results are non-significant, hence bmi is missing completely at random, and, thus, also missing at random.
 
 \begin{table}
 
