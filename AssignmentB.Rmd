@@ -69,7 +69,7 @@ data0 <- readRDS("incomplete_data_g1.rds")
 
 # Imputations{#Imp}
 
-After observing the data for missing values, we now try to solve the missingness problem by doing multiple imputation with the package `mice`. In order to answer the research question with the imputed data we will follow the main steps in multiple imputation following [van Buuren, 2018](https://stefvanbuuren.name/fimd/workflow.html), shown in Figure \@ref(fig:image). In first instance we will use the default settings to impute the missingness, this will be further elaborated in the [Default Imputations](#defImp) section. After the the default imputations we will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. This will be done in the [Evaluating Default Imputations](#evalImp) section. After evaluating the default imputations, we will make an outline of how the imputations can be improved, by using more sophisticated imputations. This will be discussed in the [Improving the Imputations](#improveImp) section.    
+After observing the data for missing values, we now try to solve the missingness problem by doing multiple imputation with the package `mice`. The missing data in our dataset are MAR, so using mice should work fine. In order to answer the research question with the imputed data we will follow the main steps in multiple imputation following [van Buuren, 2018](https://stefvanbuuren.name/fimd/workflow.html), shown in Figure \@ref(fig:image). In first instance we will use the default settings to impute the missingness, this will be further elaborated in the [Default Imputations](#defImp) section. After the the default imputations we will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. This will be done in the [Evaluating Default Imputations](#evalImp) section. After evaluating the default imputations, we will make an outline of how the imputations can be improved, by using more sophisticated imputations. This will be discussed in the [Improving the Imputations](#improveImp) section.    
 
 ![Scheme of main steps in multiple imputation](Scheme.png "image"){#fig:image}
 
@@ -94,7 +94,12 @@ methS <- meth["smoke"]
 ```
 
 As mentioned before we will first use the default settings of `mice` to impute the missingness. In this section we will describe them. 
-By default, `mice` will produce `r m` imputations and 5 iterations. **Say here something about the imputations and iterations (what do they do and why do we use them?)**   
+
+By default, `mice` will produce `r m` imputations and 5 iterations `r maxit`. The number of imputations represent the amount of imputed datasets that will be created by mice. Thus with the default `r m` imputations, there are 5 datasets created with imputed data which differ in what values are imputed as a result of the missing value uncertainty(https://stefvanbuuren.name/fimd/sec-nutshell.html#fig:miflow). In comparison to a single imputation method like 'mean imputation, the multiple imputation method (obviously) improves the imputation variability. Using a greater amount than just 1 imputation, will result in more accurate standard errors, unbiased estimates and better confidence intervals (https://stefvanbuuren.name/fimd/sec-howmany.html).
+
+The number of iterations, which by default is 5, represent the amount `mice` will iterate over the variables in each imputation. After imputation, convergence should be met for each variable. If not, one could try to enlarge the amount of iterations.
+
+**Say here something about the imputations and iterations (what do they do and why do we use them?)**   
 
 Say something about the predictor matrix:
 
