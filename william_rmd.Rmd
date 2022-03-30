@@ -9,75 +9,16 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Libraries
-```{r libraries, warning = FALSE, message = FALSE}
-library(mice)
-library(tidyverse)
-library(ggplot2)
-library(mice)
-library(dplyr)
-library(naniar)
-library(magrittr)
-
-```
-
 ## Introduction
 
-The matter of interest for this assignment will be the impact that incomplete data (**observed data**) has on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a random multiple regression model 
+The matter of interest for this assignment will be the impact that incomplete data (**observed data**) have on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a multiple regression model. 
 
-Therefore our research question states: what impact do missing values have on a "active" heart rate" model inference?
+Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:obsData) we compare the head of the observed data and the true data. Additionally, in \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices; one for the observed data \@ref(tab:corObs) and the other for the true data \@ref(tab:corTrue). 
 
-## 2. Loading both observed and true dataset
-```{r}
-data0 <- readRDS("incomplete_data_g1.rds")
-data1 <- readRDS("complete_data.rds")
-```
+Secondly, we present our multiple regression model in table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data, whereas the latter reflect the true data.
 
+The research question we try to answer in accordance with our model is: *What influence does a person's age, smoking habits, sex and bmi have on their heart rate during excercise?*
 
-## Quick inspection of both datasets
-```{r}
-str(data1)
-```
-*Needs commenting*
-```{r}
-str(data0)
-```
-*Needs commenting*
-```{r}
-summary(data1)
-```
-*Needs commenting*
-```{r}
-summary(data0)
-```
-*Needs commenting*
+Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In \@ref(fig:misspat) we begin by giving a global overview of the missingness. Then, in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
 
-## Correlation matrix for true database
-First select the numeric variables for a quick investigation
-*install Hmisc package*
-```{r}
-num_variables <- dplyr::select_if(data1, is.numeric)
-cor_num <- cor(num_variables)
-cor_num
-```
-
-
-## Including Plots
-```{r pressure, echo=FALSE}
-fig1 <- ggplot(data1) + aes(x = sex, y = age) + geom_boxplot(color = "#f49bd2")
-fig1
-```
-
-## Inspecting missingness
-```{r}
-md.pattern(data0)
-```
-In total, the observed dataset contains 540 missing values. The variables **age**, **sex**, **intensity** and **rest** have zero missings. 
-```{r}
-vis_miss(data0)
-```
-
-```{r}
-mactive <- is.na(data0$active)#create variable that contains missings
-t.test(bmi ~ mactive, data = data1) #testing differences for missings
-```
+Lastly, we perform t-tests on the variables containing missing values to check the type of missingness, either MNAR, MAR, or MCAR. We also provide plots here to visualize where the missing values occur.
