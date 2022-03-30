@@ -100,7 +100,7 @@ Say something about the predictor matrix:
 
 Table \@ref(tab:predImp) gives an overview of the predictor matrix for the imputations. 
 
-$
+method weight = `r methW`
 
 
 ```{r predImp, results='hold'}
@@ -126,6 +126,10 @@ pred[c("height", "bmi"), "weight"] <- 0
 ```
 
 ```{r}
+imp < mice(data0,
+           seed = 26011994,
+           print = FALSE)
+
 imp <- mice(data0, 
             m = 5, 
             maxit =  15,
