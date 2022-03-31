@@ -880,7 +880,7 @@ marSmoke7
 
 # Imputations{#Imp}
 
-After observing the data for missing values, we now try to solve the missingness problem by doing multiple imputation with the package `mice`. In order to answer the research question with the imputed data we will follow the main steps in multiple imputation following [van Buuren, 2018](https://stefvanbuuren.name/fimd/workflow.html), shown in Figure \@ref(fig:image). In first instance we will use the default settings to impute the missingness, this will be further elaborated in the [Default Imputations](#defImp) section. After the the default imputations we will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. This will be done in the [Evaluating Default Imputations](#evalImp) section. After evaluating the default imputations, we will make an outline of how the imputations can be improved, by using more sophisticated imputations. This will be discussed in the [Improving the Imputations](#improveImp) section.    
+After observing the data for missing values, we now try to solve the missingness problem by doing multiple imputation with the package `mice`. Considering our missing data are MAR, mice should work just fine. In order to answer the research question with the imputed data we will follow the main steps in multiple imputation following [van Buuren, 2018](https://stefvanbuuren.name/fimd/workflow.html), shown in Figure \@ref(fig:image). In first instance we will use the default settings to impute the missingness, this will be further elaborated in the [Default Imputations](#defImp) section. After the the default imputations we will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. This will be done in the [Evaluating Default Imputations](#evalImp) section. After evaluating the default imputations, we will make an outline of how the imputations can be improved, by using more sophisticated imputations. This will be discussed in the [Improving the Imputations](#improveImp) section.    
 
 ![Scheme of main steps in multiple imputation](Scheme.png "image"){#fig:image}
 
@@ -906,19 +906,13 @@ methS <- meth["smoke"]
 
 As mentioned before, we will first use the default settings of `mice` to impute the missingness. In this section we will describe them. 
 By default, `mice` will produce `r m` imputations and 5 iterations.
-An imputation is a replacement value for a missing value. A new data set is created for each imputation. There will be 5 imputed data sets by default. 
+An imputation is a replacement value for a missing value. The number of imputations represent the amount of imputed datasets that will be created by mice. Thus with the default `r m` imputations, there are 5 datasets created with imputed data which differ in what values are imputed as a result of random variation. The random variation also has to do with the uncertainty about what value to impute[van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-nutshell.html#fig:miflow). In comparison to a single imputation method like 'mean imputation, the multiple imputation method (obviously) improves the imputation variability. Using a greater amount than just 1 imputation, will result in more accurate standard errors, unbiased estimates and better confidence intervals [van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-howmany.html).
 
-The method for imputations depends on the measurement level of the target variable. The variables active, height, bmi and weight will be imputed with predictive mean matching. This means that the missing values of these variables will be predicted based on observed values (donors) closest to the missing value in the same column. Then, one of these donors is selected randomly, and its value is used to replace the missing value.
+The default methods that `mice` uses to impute the missing values are: `r methS` for smoke, `rmethA` for active, `r methH` for height, `r methW` for weight and `r methB` for bmi. The method for imputations depends on the measurement level of the target variable. Obviously there are no methods for *age, sex, intensity and rest* since they have no missing values. The `r methS` for smoke uses uses the Bayesian logistic regression method to impute missing data. Based of the information from the other observations, the function will calculate the probability of 'Smoker' or 'Non-smoker' for each missing value to impute. When comparing the probability to some threshold (probably 50%) the function will impute 'Smoker' for any probability greater than 50% and 'Non-smoker' otherwise. The `r methA` for active, height, weight and bmi uses the predicitve mean matching method to impute missing data. This "pmm" method starts by defining a linear regression model. The missing values of these variables will be predicted based on observed values (donors) closest to the missing value in the same column. Then, one of these donors is selected randomly, and its value is used to replace the missing value.
 
-The variable smoke will be imputed using a logistic regression. **How does logistic regression work?** 
+The number of iterations, which by default is 5, represent the amount `mice` will iterate over the variables in each imputation. After imputation, convergence should be met for each variable. If not, one could try to enlarge the amount of iterations.
 
-The iterations **Say here something about the imputations and iterations (what do they do and why do we use them?)**   
-
-Say something about the predictor matrix:
-
-Table \@ref(tab:predImp) gives an overview of the predictor matrix for the imputations. 
-
-method weight = `r methW`
+Table \@ref(tab:predImp) gives an overview of the predictor matrix for the imputations. The 1's represent the column variables that will be used as a predictor to impute the row variable. Logically, the zero's will not be used as predictors for imputations. For example, for *bmi* all variables except bmi are used as predictors to impute bmi. 
 
 
 ```{r predImp, results='hold'}
