@@ -32,7 +32,7 @@ Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:
 
 Secondly, we present our multiple regression model in table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data, whereas the latter reflect the true data.
 
-The research question we try to answer in accordance with our model is: *What influence does a person's age, smoking habits, sex and bmi have on their heart rate during excercise?*
+The research question we try to answer in accordance with our model is: *What influence does a person's age, smoking habits, sex and bmi have on their heart rate during exercise?*
 
 Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In \@ref(fig:misspat) we begin by giving a global overview of the missingness. Then, in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
 
@@ -904,8 +904,15 @@ methA <- meth["active"]
 methS <- meth["smoke"]
 ```
 
-As mentioned before we will first use the default settings of `mice` to impute the missingness. In this section we will describe them. 
-By default, `mice` will produce `r m` imputations and 5 iterations. **Say here something about the imputations and iterations (what do they do and why do we use them?)**   
+As mentioned before, we will first use the default settings of `mice` to impute the missingness. In this section we will describe them. 
+By default, `mice` will produce `r m` imputations and 5 iterations.
+An imputation is a replacement value for a missing value. A new data set is created for each imputation. There will be 5 imputed data sets by default. 
+
+The method for imputations depends on the measurement level of the target variable. The variables active, height, bmi and weight will be imputed with predictive mean matching. This means that the missing values of these variables will be predicted based on observed values (donors) closest to the missing value in the same column. Then, one of these donors is selected randomly, and its value is used to replace the missing value.
+
+The variable smoke will be imputed using a logistic regression. **How does logistic regression work?** 
+
+The iterations **Say here something about the imputations and iterations (what do they do and why do we use them?)**   
 
 Say something about the predictor matrix:
 
