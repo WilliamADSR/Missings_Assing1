@@ -22,3 +22,68 @@ The research question we try to answer in accordance with our model is: *What in
 Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In \@ref(fig:misspat) we begin by giving a global overview of the missingness. Then, in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
 
 Lastly, we perform t-tests on the variables containing missing values to check the type of missingness, either MNAR, MAR, or MCAR. We also provide plots here to visualize where the missing values occur.
+
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+library(knitr)
+library(kableExtra)
+``` 
+
+
+## Default Imputations{#defImp}
+```{r}
+pred <- mice(data0)$predictorMatrix
+meth <- mice(data0)$method
+m <- mice(data0)$m
+max <- mice(data0)$maxit
+```
+
+
+
+
+```{r}
+data0 <- readRDS("incomplete_data_g1.rds")
+```
+
+```{r}
+summary(data0)
+```
+
+```{r}
+pred <- mice(data0, maxit = 0)$predictorMatrix
+pred
+```
+
+
+```{r}
+methW <- meth["weight"]
+methH <- meth["height"]
+methB <- meth["bmi"]
+methA <- meth["active"]
+methS <- meth["smoke"]
+```
+
+```{r}
+meth
+```
+
+As mentioned before we will first use the default settings of `mice` to impute the missingness. In this section we will describe them. By default, `mice` will produce `r m` imputations and 5 iterations `r maxit`. 
+
+The number of imputations represent the amount of imputed datasets that will be created by mice. Thus with the default `r m` imputations, there are 5 datasets created with imputed data which differ in what values are imputed as a result of random variation. The random variation also has to do with the uncertainty about what value to impute[van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-nutshell.html#fig:miflow). In comparison to a single imputation method like 'mean imputation, the multiple imputation method (obviously) improves the imputation variability. 
+Using a greater amount than just 1 imputation, will result in more accurate standard errors, unbiased estimates and better confidence intervals [van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-howmany.html).
+
+The number of iterations, which by default is 5, represent the amount `mice` will iterate over the variables in each imputation. After imputation, convergence should be met for each variable. If not, one could try to enlarge the amount of iterations.
+
+The default methods that `mice` uses to impute the missing values are: `r methS` for smoke, `rmethA` for active, `r methH` for height, `r methW` for weight and `r methB` for bmi. Obviously there are no methods for *age, sex, intensity and rest* since they have no missing values. The `r methS` for smoke uses uses the Bayesian logistic regression method to impute missing data. The `r methA` for active, height, weight and bmi uses the predicitve mean matching method to impute missing data. This "pmm" method starts by defining a linear regression model. 
+
+
+Table \@ref(tab:predImp) gives an overview of the predictor matrix for the imputations. The 1's represent the column variables that will be used as a predictor to impute the row variable. Logically, the zero's will not be used as predictors for imputations. For example, for *bmi* all variables except bmi are used as predictors to impute bmi. 
+
+
