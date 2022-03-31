@@ -931,6 +931,8 @@ Although the density plots and strip plots for the imputations look acceptable, 
 
 ## Improving the Imputations{#improveImp}
 
+The non-convergence of the imputations for the variables weight, height, and bmi is a structural problem, as bmi is a product of weight and height. This deterministic function is not accounted for in the current imputation model. To account for this function, we will create a new model based on a 'passive imputation' approach. Before we start the next imputations, we specify the relationship between weight, height, and bmi. Then, we alter the predictor matrix, so that the transformed variable is not used as a predictor. As a result, bmi will be predicted based on a function of the already completed variables weight and height.
+
 
 ```{r}
 imp <- mice(data0,
