@@ -661,7 +661,7 @@ tab_tA <- data.frame(
 )
 
 
-kbl(tab_tA, caption = "Difference in means of missingness of active",
+kbl(tab_tA, caption = "Difference in means of missingness of Active",
     booktabs = T, 
     col.names = c("variables", "M obs", "M true", "t", "p")
     ) %>% 
@@ -750,7 +750,7 @@ tab_tB <- data.frame(
 )
 
 
-kbl(tab_tB, caption = "Difference in means of missingness of Height",
+kbl(tab_tB, caption = "Difference in means of missingness of Bmi",
     booktabs = T,
     col.names = c("variables", "$M obs", "M true", "t", "p")
     ) %>% 
@@ -853,23 +853,24 @@ kbl(tab_tS, caption = "Difference in means of missingness of Smoke",
 The seven-bar plots in Figures \@ref(fig:mar-smoke1) and \@ref(fig:mar-smoke2) show how the missing data of smoke is divided into the other columns. The first plot shows us that the female category in sex has fewer missing values in the active column than the male category. The second plot shows almost no difference between missing values in the intensity column for the high and low category, but fewer missing values in the moderate-intensity category. The third plot shows that the missingness of smoke on rest is equally divided with two spikes where rest is lower than 55 and higher than 90. There are no more missing values after these spikes, except for one more spike where the rest is 40. The fourth plot shows that the missingness of smoke on age is equally divided with a spike where age is higher than 60. The fifth plot shows how smaller or higher (than a height of 170-175) the height gets, the more missing values there are in the smoke column, except for when the height is around 205. Then there are close to no missing values. The sixth plot shows that the missingness of smoke on bmi is equally divided except for when bmi is at its lowest or highest. Then there are almost no missing values. The seventh plot shows that the missingness of smoke on weight is equally divided, with one spike in the middle between weight of 70 and 80. There are almost no missing values when weight is at its lowest or highest.
 
 
-```{r mar-smoke1, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of smoking is MAR", fig.subcap=c('Age', 'Intensity', 'Rest', 'Age'), fig.ncol = 3, fig.align='center'}
+```{r mar-smoke1, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of smoking is MAR", fig.subcap=c('Sex', 'Intensity', 'Rest'), fig.ncol = 3, fig.align='center'}
 marSmoke1 <- data3 %>% select(sex, smoke) %>% spineMiss()
 marSmoke2 <- data3 %>% select(intensity, smoke) %>% spineMiss()
 marSmoke3 <- data3 %>% select(rest, smoke) %>% spineMiss()
-marSmoke4 <- data3 %>% select(age, smoke) %>% spineMiss()
-marSmoke5 <- data3 %>% select(height, smoke) %>% spineMiss()
-marSmoke6 <- data3 %>% select(bmi, smoke) %>% spineMiss()
-marSmoke7 <- data3 %>% select(weight, smoke) %>% spineMiss()
 
 
 marSmoke1
 marSmoke2
 marSmoke3
-marSmoke4
 ```
 
-```{r mar-smoke2, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of smoking is MAR", fig.subcap=c('Height', 'Bmi', 'Weight'), fig.ncol = 3, fig.align='center'}
+```{r mar-smoke2, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of smoking is MAR", fig.subcap=c('Age', 'Height', 'Bmi', 'Weight'), fig.ncol = 3, fig.align='center'}
+marSmoke4 <- data3 %>% select(age, smoke) %>% spineMiss()
+marSmoke5 <- data3 %>% select(height, smoke) %>% spineMiss()
+marSmoke6 <- data3 %>% select(bmi, smoke) %>% spineMiss()
+marSmoke7 <- data3 %>% select(weight, smoke) %>% spineMiss()
+
+marSmoke4
 marSmoke5
 marSmoke6
 marSmoke7
