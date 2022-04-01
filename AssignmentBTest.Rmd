@@ -786,6 +786,7 @@ marBmi6
 marBmi7
 ```
 
+\newpage
 
 ## Missingness of Smoke{#MissS}
 
@@ -877,10 +878,13 @@ marSmoke7
 
 ```
 
+\newpage
 
 # Imputations{#Imp}
 
-After observing the data for missing values, we now try to solve the missingness problem by doing multiple imputations with the package `mice.` Considering our missing data are MAR, mice should work just fine. In order to answer the research question with the imputed data, we will follow the main steps in multiple imputations following [van Buuren, 2018](https://stefvanbuuren.name/fimd/workflow.html), shown in Figure \@ref(fig:image). In the first instance, we will use the default settings to impute the missingness, and this will be further elaborated in the [Default Imputations](#defImp) section. After the default imputations, we will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. The evaluation will be done in the [Evaluating Default Imputations](#evalImp) section. After evaluating the default imputations, we will outline how the imputations can be improved by using more sophisticated imputations. This will be discussed in the [Improving the Imputations](#improveImp) section.   
+After observing the data for missing values, we now try to solve the missingness problem by doing multiple imputations with the package `mice.` Considering our missing data are MAR, mice should work just fine. In order to answer the research question with the imputed data, we will follow the main steps in multiple imputations following [van Buuren, 2018](https://stefvanbuuren.name/fimd/workflow.html), shown in Figure \@ref(fig:image). In the first instance, we will use the default settings to impute the missingness, and this will be further elaborated in Section [5.1](#defImp) section. After the default imputations, we will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. The evaluation will be done in Section [5.1.1](#evalImp). After evaluating the default imputations, in Section [5.1.2](#regImputed) we will look at the regressions of the imputed data and compare the outcomes with the regressions of the observed and true data. In Section [5.1.3](#fracMiss) we will evaluate the fraction of missing data in the pooled regression analysis. Lastly we will outline how the imputations can be improved by using more sophisticated imputations. This will be discussed in Section [5.1.4](#improveImp).   
+
+After doing the Default Imputations, we will try to improve the imputations by using Passive Imputation, described in Section [5.2](#passiveImp). We will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. The evaluation will be done in Section [5.2.1](#evalPasImp). After evaluating the default imputations, in Section [5.2.2](#regImputed1) we will compare the regression outcomes of the observed, true, and both imputed data. In Section [5.2.3](#fracMissImp2) we will evaluate the fraction of missing data in the pooled regression analysis. Lastly we will outline how the imputations can be improved by using more sophisticated imputations. This will be discussed in Section [5.2.4](#imprImp2).  
 
 ![Scheme of main steps in multiple imputation](Scheme.png "image"){#fig:image}
 
@@ -943,7 +947,6 @@ densityplot(imp)
 The strip plot and boxplot for active, as shown in Figure \@ref(fig:stripplot1) and Figure \@ref(fig:boxplot1), further increases the validity of the imputation, as the imputed values show a wide variability. For height, and weight, the strip plots show almost no imputations on the lower and higher end. For bmi, the plots show almost no imputations on the higher end. This, however, is in line with the observed data. Based on the strip plots 
 alone, the imputations seem sensible.
 
-\newpage
 
 ```{r stripplot1, fig.cap="Strip plots of the imputed values with default options", out.width="50%", fig.align='center'}
 strip1 <- stripplot(imp)
@@ -1040,7 +1043,7 @@ The non-convergence of the imputations for the variables weight, height, and bmi
 
 ## Passive Imputations{#passiveImp}
 
-For the improved imputations we use the technique passive imputation, as described above. After further examination, we decided to predict weight based on a function of bmi and height, as there are more missing values for weight than bmi. To  account for this relation, we specify the relation 'weight = bmi * (height/100) ^2', and apply this to our mice code. Then, we specify the predictors for height, weight, and bmi. With the setting '0', we ensure that the transformed variables are not being used as predictors for their non-transformed forms. This predictor setting is specified in a variable and will also be applied to the imputation model. The iterations and imputations will remain the same as the previous imputation model.
+For the improved imputations we use the technique passive imputation, as described above. After further examination, we decided to predict weight based on a function of bmi and height, as there are more missing values for weight than bmi. To  account for this relation, we specify the relation $meth_{weight} = bmi * (\frac{height}{100})^2$', and apply this to our imputations. Then, we specify the predictors for height, weight, and bmi. With the setting '0', we ensure that the transformed variables are not being used as predictors for their non-transformed forms. This predictor setting is specified in a variable and will also be applied to the imputation model. The iterations and imputations will remain the same as the previous imputation model.
 
 ```{r}
 pred <- mice(data0, maxit = 0)$predictorMatrix
@@ -1080,7 +1083,7 @@ The strip plot and boxplot for active, as shown in Figure \@ref(fig:stripplot1) 
 alone, the imputations seem sensible.
 
 
-```{r stripplot2, out.width="50%", fig.align='center', fig.cap="Stripplots of the imputations wiht Passive Imputation"}
+```{r stripplot2, out.width="50%", fig.align='center', fig.cap="Stripplots of the imputations with Passive Imputation"}
 stripplot(imp1)
 ```
 
@@ -1127,9 +1130,11 @@ tabImp2 <- data.frame(
 
 ```
 
-In Table \@ref(tab:regImp2) we present the regression analysis of the observed, imputed and true data. To start with, there are several differences between the observed data and the imputed data. For all predictors in our regression model, the beta coefficients are lower for the imputed data except for *smokeyes*. Thus, the degree of change for *active* has decreased for every predictor, except *smokeyes*. Furthermore, the standard errors around the beta coefficients have decreased for all predictors including the intercept. This suggests that the imputations resulted in more precise estimates for the beta coefficients. Also for every predictor except *smokeyes*, has the p-value increased for the imputed data. An increase in p-value corresponds to lesser significance of a predictor.
+### Regressions with Passive Imputations {#regPasImp}
 
-Secondly, when comparing the imputed data to the true data, making inferences based on the imputed data is even worse than for the observed data. However, just for the predictor *smokeyes* it has gotten better. One would make the same inferences for *smokeyes* in the true data as for the imputed data. Only the standard error and the p-value for *smokeyes* are still a bit larger in the imputed data than for the true data.
+In Table \@ref(tab:regImp2) present an extended regression analysis of \@ref(tab:regImp1), described in Section [5.1.2](#regImputed), by adding the results of the passive imputations. When we compare the results of the `Default Imputations` with the `Passive Imputations`, the coefficients, the standard errors and the p values for all predictors, but *smokeyes* are more precise in the `Passive Imputations` compared to the `Default Imputations`. However, compared to the `Observed Data`, only the coefficients, standard error and p value of *bmi* seems to have improved by using passive imputation.     
+
+
 
 ```{r regImp2, results='hold'}
 
@@ -1144,6 +1149,8 @@ kbl(tabImp2, caption = "Regression analysis of the Observed, Imputed and True da
   kable_classic(full_width = F, html_font = "Cambria") %>% 
   kable_styling(latex_options = "scale_down")
 ```
+
+### Evaluating the Fraction of Missing Data {#fracMissImp2}
 
 Table \@ref(tab:missInfo1) gives us the Fraction of missing information for both the outcomes of the default imputations as the passive imputations. Where we saw high outcomes of *riv*, *lambda*, and *fmi* for *bmi* and *active* with the default imputations, these values drastically decreased after using passive imputation. However, these imputations resulted in substantially higher outcomes of *riv*, *lambda* and *fmi* for *sex*, *smoke* and the interaction of *bmi* and *sex*. These increased values give us the indication that we have to improve the passive imputation. 
 
@@ -1166,5 +1173,6 @@ kbl(tabMiss2, caption = "Missing information in Imputed Data",
     kable_classic(full_width = F, html_font = "Cambria") 
 ```
 
+### Improving the Imputations {#imprImp2}
  
 
