@@ -921,11 +921,33 @@ kbl(pred, caption = "Predictor Matrix of Default Imputations") %>%
 
 ## Evaluating Default Imputations{#evalImp}
 
-As can be seen in the trace plots, the imputations, represtented as lines, show little to no mix for the variables height, weight, and bmi. This weak convergence suggests that there is not enough information for a solution. The imputed values are thus not plausible. The imputations for smoke and active show a greater convergence. These variablies do thus not require a different imputation method. 
+As can be seen in the trace plots in \@ref(fig:convergence), the imputations, represented as lines, show little to no mix for the variables height, weight, and bmi. This weak convergence suggests that there is not enough information for a solution. The imputed values are thus not plausible. The imputations for smoke and active show a greater convergence. These variablies do thus not require a different imputation method. 
 
-The density plots show a variability of the imputed values, in line with the observed values. There appear no impossible values in these plots.
+```{r}
+imp <- mice(data0,
+            seed = 26011994,
+            print = FALSE)
+```
 
-The strip plot for active further increases the validity of the imputation, as the imputed values show a wide variability. For height, and weight, the strip plots show almost no imputations on the lower and higher end. For bmi, the plots show almost no imputations on the higher end. This, however, is in line with the observed data. Based on the strip plots alone, the imputations seem sensible.
+```{r convergence, fig.show='hold', fig.cap="Trace plots of the imputations with default options"}
+plot(imp)
+```
+
+The density plots in Figure \@ref(fig:density) show a variability of the imputed values, in line with the observed values. There appear no impossible values in these plots.
+
+```{r density, fig.cap="Density plots of the imputed values with default options"}
+densityplot(imp)
+```
+
+The strip plot for active, as shown in Figure \@ref(fig:stripplot1), further increases the validity of the imputation, as the imputed values show a wide variability. For height, and weight, the strip plots show almost no imputations on the lower and higher end. For bmi, the plots show almost no imputations on the higher end. This, however, is in line with the observed data. Based on the strip plots 
+alone, the imputations seem sensible.
+
+
+
+```{r stripplot1, fig.cap="Strip plots of the imputed values with default options"}
+strip1 <- stripplot(imp)
+strip1
+```
 
 Although the density plots and strip plots for the imputations look acceptable, way me not use the imputed values as the imputation model has shown no convergence. We can hence not make inferences based on the imputed models and need another, more sophisticated model to acquire plausible imputations.
 
@@ -933,12 +955,63 @@ Although the density plots and strip plots for the imputations look acceptable, 
 
 The non-convergence of the imputations for the variables weight, height, and bmi is a structural problem, as bmi is a product of weight and height. This deterministic function is not accounted for in the current imputation model. To account for this function, we will create a new model based on a 'passive imputation' approach. Before we start the next imputations, we specify the relationship between weight, height, and bmi. Then, we alter the predictor matrix, so that the transformed variable is not used as a predictor. As a result, bmi will be predicted based on a function of the already completed variables weight and height.
 
+```{r}
+fitImp <- with(imp, lm(active ~ age + bmi*sex + smoke))
+est <- pool(fitImp)
+
+estImp <- summary(est)
+
+coef3 <- round(estImp$estimate, 3)
+SE3 <- round(estImp$std.error, 2)
+pVal3 <- round(estImp$p.value, 3)
+
+riv1 <- round(est$pooled$riv, 3)
+lambda1 <- round(est$pooled$lambda, 3)
+fmi1 <- round(est$pooled$fmi, 3)
+
+terms1 <- est$pooled$term
+
+```
+
 
 ```{r}
-imp <- mice(data0,
-            seed = 26011994,
-            print = FALSE)
-plot(imp)
-densityplot(imp)
-stripplot(imp)
+tabImp1 <- data.frame(
+  coefObs <-  coef1,
+  seObs <- SE1,
+  pObs <- pVal1,
+  coefImp <- coef3,
+  seImp <- SE3,
+  pImp <- pVal3,
+  coefTrue <- coef2,
+  seTrue <- SE2,
+  pTrue <- pVal2)
+
 ```
+
+```{r regImp1, results='hold'}
+
+kbl(tabImp1, caption = "Regression analysis of the Observed, Imputed and True data",
+    booktabs = T,
+    col.names = c("b", "SE", "p",
+                 "b", "SE", "p",
+                 "b", "SE", "p")
+    ) %>% 
+  add_header_above(c("", "Observed Data (N=155)" = 3, "Imputed Data (N=306)" = 3, "True Data (N=306)" = 3)) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+
+```{r missInfo, results='hold'}
+tabMiss1 <- data.frame(
+  terms1 <- terms1,
+  riv1 <- riv1,
+  lambda1 <- lambda1,
+  fmi1 <- fmi1
+)
+
+kbl(tabMiss1, caption = "Missing information in Imputed Data",
+    booktabs = T,
+    col.names = c("", "riv", "lambda", "fmi")
+    ) %>% 
+    kable_classic(full_width = F, html_font = "Cambria")
+```
+
