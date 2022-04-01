@@ -1104,7 +1104,7 @@ As can be seen in the trace plots in Figure \@ref(fig:convergence1), the imputat
 plot(imp1)
 ```
 
-The density plots in Figure \@ref(fig:density1) show the variability of the imputed values, in line with the observed values. There appear no impossible values in these plots.
+The density plots in Figure \@ref(fig:density1) show the variability of the imputed values. In line with the observed values, there appear no impossible values in these plots.
 
 ```{r density1, out.width="50%", fig.align='center', fig.cap="Density plots of the imputations with Passive Imputation"}
 densityplot(imp1)
@@ -1224,4 +1224,4 @@ kbl(tabMiss2, caption = "Missing information in Imputed Data",
 
 ### Improving the Imputations {#imprImp2}
  
-
+After analysing the regression model with passive imputations, we conclude that there’s quite the room for improvement. For instance, the predictors *smoke*, *sex* and the interaction of *bmi* and *sex* still need a lot of improvement with regard to making accurate inferences out of them. Also, when evaluating the information about the measures of missing values for the passive imputation, we observe values for riv, lambda, and fmi that are to high for the same predictors. Thus, further on this document we will try to finalize these improvements.
