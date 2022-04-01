@@ -922,7 +922,7 @@ By default, `mice` will produce `r m` imputations and five iterations. An imputa
 
 The default methods that `mice` uses to impute the missing values are: `r methS` for smoke, `r methA` for active, `r methH` for height, `r methW` for weight, and `r methB` for bmi. The method for imputations depends on the measurement level of the target variable. Obviously, there are no methods for *age, sex, intensity, and rest* since they have no missing values. The `r methS` for smoke uses the Bayesian logistic regression method to impute missing data. The function will calculate the probability of 'Smoker' or 'Non-smoker' for each missing value to impute based on the information from the observations. When comparing the probability to some threshold (probably 50%), the function will impute 'Smoker' for any probability greater than 50% and 'Non-smoker' otherwise. The `r methA` for active, height, weight, and bmi uses the predictive mean matching method to impute missing data. This "pmm" method starts by defining a linear regression model. The missing values of these variables will be predicted based on observed values (donors) closest to the missing value in the same column. Then, one of these donors is selected randomly, and its value is used to replace the missing value.
 
-The number of iterations, which is 5 by default, represent the amount `mice` will iterate over the variables in each imputation. After imputation, convergence should be met for each variable. If not, one could try to enlarge the amount of iterations.
+The number of iterations, which is 5 by default, represent the amount `mice` will iterate over the variables in each imputation. After imputation, convergence should be met for each variable. If not, one could for example try to enlarge the amount of iterations.
 
 Table \@ref(tab:predImp) provides an overview of the predictor matrix for the imputations. The 1's represent the column variables that will be used as a predictor to impute the row variable. Logically, the 0's will not be used as predictors for imputations. For example, for *bmi* all variables except bmi are used as predictors to impute bmi. 
 
@@ -946,7 +946,7 @@ imp <- mice(data0,
 plot(imp)
 ```
 
-The density plots in Figure \@ref(fig:density) show a variability of the imputed values, in line with the observed values. There appear no impossible values in these plots.
+The density plots in Figure \@ref(fig:density) show a variability of the imputed values, in line with the observed values. Futhermore, there appear no impossible values in the densityplots.
 
 ```{r density, fig.cap="Density plots of the imputed values with default options", out.width="40%", fig.align='center'}
 densityplot(imp)
@@ -993,7 +993,7 @@ Although the density plots and strip plots for the imputations look acceptable, 
 
 ### Regressions with Imputed data {#regImputed}
 
-In \@ref(tab:regImp1) we present the regression analysis of the observed, imputed and true data. To start with, there are several differences between the observed data and the imputed data. For all predictors in our regression model, the beta coefficients are lower for the imputed data except for *smokeyes*. Thus, the degree of change for *active* has decreased for every predictor, except *smokeyes*. Furthermore, the standard errors around the beta coefficients have decreased for all predictors including the intercept. This suggests that the imputations resulted in more precise estimates for the beta coefficients. Also for every predictor except *smokeyes*, has the p-value increased for the imputed data. An increase in p-value corresponds to lesser significance of a predictor.
+In table \@ref(tab:regImp1) we present the regression analysis of the observed, imputed and true data. To start with, there are several differences between the observed data and the imputed data. For all predictors in our regression model, the beta coefficients are lower for the imputed data except for *smokeyes*. Thus, the degree of change for *active* has decreased for every predictor, except *smokeyes*. Furthermore, the standard errors around the beta coefficients have decreased for all predictors including the intercept. This suggests that the imputations resulted in more precise estimates for the beta coefficients. Also for every predictor except *smokeyes*, has the p-value increased for the imputed data. An increase in p-value corresponds to lesser significance of a predictor.
 
 Secondly, when comparing the imputed data to the true data, making inferences based on the imputed data is even worse than for the observed data. However, just for the predictor *smokeyes* it has gotten better. One would make the same inferences for *smokeyes* in the true data as for the imputed data. Only the standard error and the p-value for *smokeyes* are still a bit larger in the imputed data than for the true data.
 
@@ -1098,13 +1098,14 @@ imp1 <- mice(data0,
 
 ### Evaluating Passive Imputations{#evalPasImp}
 
-As can be seen in the trace plots in Figure \@ref(fig:convergence1), the imputations, represented as lines, intermingle better than the default imputations shown in \@ref(fig:convergence). The improved convergence suggests that there is more information for a solution.
+As can be seen in the trace plots in Figure \@ref(fig:convergence1), the imputations, represented as lines, now intermingle for all predictors. This was not the case for the default imputations as shown in figure \@ref(fig:convergence). Now the lines are also horizontal which is what we like to see. The improved convergence suggests that there is more information for a solution.
 
 ```{r convergence1, out.width = "40%", fig.cap="Trace plots of the imputations with Passive Imputation", fig.align='center', fig.show='hold'}
 plot(imp1)
 ```
 
-The density plots in Figure \@ref(fig:density1) show the variability of the imputed values. In line with the observed values, there appear no impossible values in these plots.
+Also the density plots in Figure \@ref(fig:density1) show nice outputs as excpected after the trace plots. As mentioned before, the density plots visualize the variability of the imputed values. The imputed values are again plausible.
+
 
 ```{r density1, out.width="50%", fig.align='center', fig.cap="Density plots of the imputations with Passive Imputation"}
 densityplot(imp1)
@@ -1112,9 +1113,7 @@ densityplot(imp1)
 
 
 \newpage
-The strip plot and boxplot for active, as shown in Figure \@ref(fig:stripplot2) and Figure \@ref(fig:boxplot2), further increases the validity of the imputation, as the imputed values show a wide variability. For height, and weight, the strip plots show almost no imputations on the lower and higher end. For bmi, the plots show almost no imputations on the higher end. This, however, is in line with the observed data. Based on the strip plots 
-alone, the imputations seem sensible.
-
+The strip plots and boxplots for active, are shown in Figure \@ref(fig:stripplot2) and Figure \@ref(fig:boxplot2). Both figures look much like the default imputation. However this time, these plots now add value since the trace plots are acceptable. The imputations in the strip plots and boxplots show just a little bit more variability for example in *bmi* than for the default imputations. The imputations are again in line with the observed data. We consider the passive imputations as sensible.
 
 ```{r stripplot2, fig.cap="Strip plots of the imputed values with Passive Imputation", out.width="50%",  fig.align='center', fig.ncol = 2, fig.subcap=c('Active', 'Height', 'Weight', 'Bmi')  }
 strip2Active <- stripplot(imp1, active)
