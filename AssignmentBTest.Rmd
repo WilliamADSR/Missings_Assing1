@@ -906,7 +906,7 @@ methS <- meth["smoke"]
 ```
 
 As mentioned before, we will first use the default settings of `mice` to impute the missingness. In this section, we will describe them. 
-By default, `mice` will produce `r m` imputations and five iterations. An imputation is a replacement value for a missing value. The number of imputations represents the number of imputed data sets that mice creates. Thus, with the default `r m` imputations, five datasets are created with imputed data that differ in what values are imputed due to random variation. The random variation also has to do with the uncertainty about what value to impute [van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-nutshell.html#fig:miflow). In comparison to a single imputation method like mean imputation, the multiple imputation method (obviously) improves the imputation variability. Using a greater amount than just one imputation will result in more accurate standard errors, unbiased estimates, and better confidence intervals [van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-howmany.html).
+By default, `mice` will produce `r m` imputations and five iterations. An imputation is a replacement value for a missing value. The number of imputations represents the number of imputed data sets that mice creates. Thus, with the default `r m` imputations, five datasets are created with imputed data that differ in what values are imputed due to random variation. The random variation also has to do with the uncertainty about what value to impute [van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-nutshell.html#fig:miflow). In comparison to a single imputation method like mean imputation, the multiple imputation method (obviously) improves the imputation variability. Using a greater amount than just one imputation will result in more accurate standard errors, unbiased estimates, and better confidence intervals [(van Buuren, 2018)](https://stefvanbuuren.name/fimd/sec-howmany.html).
 
 The default methods that `mice` uses to impute the missing values are: `r methS` for smoke, `r methA` for active, `r methH` for height, `r methW` for weight, and `r methB` for bmi. The method for imputations depends on the measurement level of the target variable. Obviously, there are no methods for *age, sex, intensity, and rest* since they have no missing values. The `r methS` for smoke uses the Bayesian logistic regression method to impute missing data. The function will calculate the probability of 'Smoker' or 'Non-smoker' for each missing value to impute based on the information from the observations. When comparing the probability to some threshold (probably 50%), the function will impute 'Smoker' for any probability greater than 50% and 'Non-smoker' otherwise. The `r methA` for active, height, weight, and bmi uses the predictive mean matching method to impute missing data. This "pmm" method starts by defining a linear regression model. The missing values of these variables will be predicted based on observed values (donors) closest to the missing value in the same column. Then, one of these donors is selected randomly, and its value is used to replace the missing value.
 
@@ -930,7 +930,7 @@ imp <- mice(data0,
             print = FALSE)
 ```
 
-```{r convergence, fig.show='hold', fig.cap="Trace plots of the imputations with default options", out.width = '50%', fig.align='center'}
+```{r convergence, fig.show='hold', fig.cap="Trace plots of the imputations with default options", out.width = '40%', fig.align='center'}
 plot(imp)
 ```
 
@@ -943,7 +943,7 @@ densityplot(imp)
 The strip plot and boxplot for active, as shown in Figure \@ref(fig:stripplot1) and Figure \@ref(fig:boxplot1), further increases the validity of the imputation, as the imputed values show a wide variability. For height, and weight, the strip plots show almost no imputations on the lower and higher end. For bmi, the plots show almost no imputations on the higher end. This, however, is in line with the observed data. Based on the strip plots 
 alone, the imputations seem sensible.
 
-
+\newpage
 
 ```{r stripplot1, fig.cap="Strip plots of the imputed values with default options", out.width="50%", fig.align='center'}
 strip1 <- stripplot(imp)
@@ -1013,9 +1013,9 @@ kbl(tabImp1, caption = "Regression analysis of the Observed, Imputed and True da
 
 ### Evaluating the fraction of missing data {#fracMiss}
 
-In \@ref(tab:missInfo1) we present information about the measures of missing values in the imputed data. *RIV* accords for the relative increase in variance, *lambda* is the proportion of the variation in the parameter caused by missing data and *FIV* is basically the same as lambda but FIV also adjusts for the number of imputed datasets. ([https://bookdown.org/mwheymans/bookmi/measures-of-missing-data-information.html])
+In Table \@ref(tab:missInfo) we present information about the measures of missing values in the imputed data. *RIV* accords for the relative increase in variance, *lambda* is the proportion of the variation in the parameter caused by missing data and *FMI* is basically the same as lambda, but FMI also adjusts for the number of imputed datasets [(Heymans & Eekhout, 2019)](https://bookdown.org/mwheymans/bookmi/measures-of-missing-data-information.html). 
 
-In \@ref(tab:missInfo1) we observe that the predictor *bmi* stands out from the rest. Furthermore, the missing data for *bmi* accounts for more than 50% of the variation in the parameter. This might has to do with bmi being a derived variable. Later in this document we will try to fix this problem.
+In Table \@ref(tab:missInfo1) we observe that both *bmi* and *active* stands out from the rest. Furthermore, the missing data for *bmi* and *active* accounts for more than 50% of the variation in the parameter. This might has to do with bmi being a derived variable. Later in this document we will try to fix this problem.
 
 ```{r missInfo, results='hold'}
 tabMiss1 <- data.frame(
@@ -1055,7 +1055,7 @@ pred[c("height", "bmi"), "weight"] <- 0
 ```{r}
 imp1 <- mice(data0, 
             m = 5, 
-            maxit =  10,
+            maxit =  15,
             predictorMatrix = pred,
             method = meth,
             seed = 26011994,
@@ -1066,7 +1066,7 @@ imp1 <- mice(data0,
 
 As can be seen in the trace plots in Figure \@ref(fig:convergence1), the imputations, represented as lines, intermingle better than the default imputations shown in \@ref(fig:convergence). The improved convergence suggests that there is more information for a solution.
 
-```{r convergence1, out.width = "50%", fig.align='center', fig.cap="Trace plots of the imputations with Passive Imputation"}
+```{r convergence1, out.width = "50%", fig.cap="Trace plots of the imputations with Passive Imputation", fig.align='center', fig.show='hold'}
 plot(imp1)
 ```
 
@@ -1127,6 +1127,10 @@ tabImp2 <- data.frame(
 
 ```
 
+In Table \@ref(tab:regImp2) we present the regression analysis of the observed, imputed and true data. To start with, there are several differences between the observed data and the imputed data. For all predictors in our regression model, the beta coefficients are lower for the imputed data except for *smokeyes*. Thus, the degree of change for *active* has decreased for every predictor, except *smokeyes*. Furthermore, the standard errors around the beta coefficients have decreased for all predictors including the intercept. This suggests that the imputations resulted in more precise estimates for the beta coefficients. Also for every predictor except *smokeyes*, has the p-value increased for the imputed data. An increase in p-value corresponds to lesser significance of a predictor.
+
+Secondly, when comparing the imputed data to the true data, making inferences based on the imputed data is even worse than for the observed data. However, just for the predictor *smokeyes* it has gotten better. One would make the same inferences for *smokeyes* in the true data as for the imputed data. Only the standard error and the p-value for *smokeyes* are still a bit larger in the imputed data than for the true data.
+
 ```{r regImp2, results='hold'}
 
 kbl(tabImp2, caption = "Regression analysis of the Observed, Imputed and True data",
@@ -1136,13 +1140,12 @@ kbl(tabImp2, caption = "Regression analysis of the Observed, Imputed and True da
                  "b", "SE", "p",
                  "b", "SE", "p")
     ) %>% 
-  add_header_above(c("", "Observed Data (N=155)" = 3, "Imputed Data 1(N=306)" = 3, "Imputed Data 2(N=306)"=3, "True Data (N=306)" = 3)) %>% 
+  add_header_above(c("", "Observed Data (N=155)" = 3, "Default Imputation(N=306)" = 3, "Passive Imputation(N=306)"=3, "True Data (N=306)" = 3)) %>% 
   kable_classic(full_width = F, html_font = "Cambria") %>% 
   kable_styling(latex_options = "scale_down")
 ```
 
-
-
+Table \@ref(tab:missInfo1) gives us the Fraction of missing information for both the outcomes of the default imputations as the passive imputations. Where we saw high outcomes of *riv*, *lambda*, and *fmi* for *bmi* and *active* with the default imputations, these values drastically decreased after using passive imputation. However, these imputations resulted in substantially higher outcomes of *riv*, *lambda* and *fmi* for *sex*, *smoke* and the interaction of *bmi* and *sex*. These increased values give us the indication that we have to improve the passive imputation. 
 
 ```{r missInfo1, results='hold'}
 tabMiss2 <- data.frame(
@@ -1159,7 +1162,7 @@ kbl(tabMiss2, caption = "Missing information in Imputed Data",
     booktabs = T,
     col.names = c("", "riv", "lambda", "fmi", "riv", "lambda", "fmi")
     ) %>% 
-  add_header_above(c("", "Imputed Data1" = 3, "Imputed Data 2" = 3)) %>% 
+  add_header_above(c("", "Default Imputation" = 3, "Passive Imputation" = 3)) %>% 
     kable_classic(full_width = F, html_font = "Cambria") 
 ```
 
