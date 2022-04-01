@@ -1040,7 +1040,7 @@ The non-convergence of the imputations for the variables weight, height, and bmi
 
 ## Passive Imputations{#passiveImp}
 
-**Write here something about the passive imputation**
+For the improved imputations we use the technique passive imputation, as described above. After further examination, we decided to predict weight based on a function of bmi and height, as there are more missing values for weight than bmi. To  account for this relation, we specify the relation 'weight = bmi * (height/100) ^2', and apply this to our mice code. Then, we specify the predictors for height, weight, and bmi. With the setting '0', we ensure that the transformed variables are not being used as predictors for their non-transformed forms. This predictor setting is specified in a variable and will also be applied to the imputation model. The iterations and imputations will remain the same as the previous imputation model.
 
 ```{r}
 pred <- mice(data0, maxit = 0)$predictorMatrix
