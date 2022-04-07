@@ -1224,3 +1224,34 @@ kbl(tabMiss2, caption = "Missing information in Imputed Data",
 ### Improving the Imputations {#imprImp2}
  
 After analysing the regression model with passive imputations, we conclude that there’s quite the room for improvement. For instance, the predictors *smoke*, *sex* and the interaction of *bmi* and *sex* still need a lot of improvement with regard to making accurate inferences out of them. Also, when evaluating the information about the measures of missing values for the passive imputation, we observe values for riv, lambda, and fmi that are to high for the same predictors. Thus, further on this document we will try to finalize these improvements.
+
+
+# Assignment C
+
+```{r}
+pred2 <- quickpred(data0, mincor=0.3)
+pred[c("height", "bmi"), "weight"] <- 0
+pred[c("age", "sex", "active", "intensity", "rest"), "smoke"] <-0 
+pred[c("age", "height", "intensity", "smoke"), "active"] <-0
+
+imp2 <- mice(data0, 
+            m = 5, 
+            maxit =  15,
+            predictorMatrix = pred,
+            method = meth,
+            seed = 26011994,
+            print = FALSE)
+pred2
+meth
+```
+
+```{r}
+plot(imp2)
+
+fitImp2 <- with(imp2, lm(active ~ age + bmi*sex + smoke))
+est2 <- pool(fitImp2)
+
+fitTest <- summary(est2)
+fitTest
+est2
+```
