@@ -1,0 +1,1393 @@
+---
+title: "AssignmentB"
+author: "Martijn Koster, William Schaafsma, Martijn van Dam, Victor Hovius"
+date: "3/21/2022"
+output: 
+  bookdown::pdf_document2:
+    extra_dependencies: "subfig" 
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, comment = NA, warning = FALSE,
+                      error=FALSE, results='hide',fig.keep='all')
+```
+
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+``` 
+
+\newpage
+
+# Introduction{#intro}
+The matter of interest for this assignment will be the impact that incomplete data (**observed data**) have on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a multiple regression model. 
+
+Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:obsData1) we compare the head of the observed data and the true data. Additionally, in Table \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices; one for the observed data (Table \@ref(tab:corObs)) and the other for the true data Table (\@ref(tab:corTrue)).
+
+Secondly, we present our multiple regression model in table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data, whereas the latter reflect the true data.
+
+The research question we try to answer in accordance with our model is: *What influence does a person's age, smoking habits, sex and bmi have on their heart rate during exercise?*
+
+Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In Figure \@ref(fig:misspat) we begin by giving a global overview of the missingness.
+
+Afterwards, we perform t-tests on the variables containing missing values to check the type of missingness, either MNAR, MAR, or MCAR. We also provide plots here to visualize where the missing values occur.
+
+Lastly, we use multiple imputation to solve the missingness. How we are doing it, and why will be further elaborated in Section [5](#Imp)
+
+```{r}
+data0 <- readRDS("incomplete_data_g1.rds") # load incomoplete
+data1 <- readRDS("complete_data.rds")
+```
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+library(knitr)
+library(kableExtra)
+``` 
+
+
+# Observed vs True data{#data}
+
+In this section we will compare the observed with the true data set. 
+
+```{r obsData1, results='hold'}
+kbl(data0[1:5,], caption = "First Five Cases of Observed Data", booktabs = T) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+```{r obsData2, results='hold'}
+kbl(data1[1:5,], caption = "First Five Cases of True Data", booktabs = T) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+
+## Descriptives{#data1}
+
+The means and the variance of the variables age and rest remain unchanged, as they have no missing values. 
+
+The means of the variables active, weight, and bmi are somewhat higher for the observed data set compared to the true data set. For height, the mean of the observed data set is somewhat smaller compared to the true data set.
+
+Furthermore, the variance of the variable active in the observed data set is .01 lower than the true data set, and thus almost entirely unaffected. However the variables height, weight, and bmi have greater variance in the true data set than the observed data set. This implies that the missingness causes an underestimation of the variance.
+
+
+```{r}
+mAgeO <- round(mean(data0$age), 2)
+mAgeT <- round(mean(data1$age), 2)
+mActiveO <- round(mean(data0$active, na.rm = TRUE), 2)
+mActiveT <- round(mean(data1$active), 2)
+mRest <- round(mean(data0$rest), 2)
+mHeightO <- round(mean(data0$height, na.rm = TRUE), 2)
+mHeightT <- round(mean(data1$height), 2)
+mWeightO <- round(mean(data0$weight, na.rm = TRUE), 2)
+mWeightT <- round(mean(data1$weight), 2)
+mBmiO <- round(mean(data0$bmi, na.rm = TRUE), 2)
+mBmiT <- round(mean(data1$bmi), 2)
+vAgeO <- round(var(data0$age, na.rm = TRUE), 2)
+vAgeT <- round(var(data1$age), 2)
+vActiveO <- round(var(data0$active, na.rm =TRUE), 2)
+vActiveT <- round(var(data1$active), 2)
+vRest <- round(var(data0$rest), 2)
+vHeightO <- round(var(data0$height, na.rm = TRUE), 2)
+vHeightT <- round(var(data1$height), 2)
+vWeightO <- round(var(data0$weight, na.rm = TRUE), 2)
+vWeightT <- round(var(data1$weight), 2)
+vBmiO <- round(var(data0$bmi, na.rm = TRUE), 2)
+vBmiT <- round(var(data1$bmi), 2)
+
+desO <- descriptives(data0[c("age", "active", "rest", "height", "weight", "bmi")])
+desT <- descriptives(data1[c("age", "active", "rest", "height", "weight", "bmi")])
+
+meanObs <- round(desO$mean, 2)
+nObs <- desO$n
+meanTrue <- round(desT$mean, 2)
+nTrue <- desT$n
+
+
+tab2 <- data.frame(
+  variables <- c("Age", "Active", "Rest", "Height", 
+                 "Weight", "Bmi"),
+  meanObs <-  meanObs,
+  meanTrue <- meanTrue,
+  varObs <- c(vAgeO, vActiveO, vRest, vHeightO,
+                vWeightO, vBmiO),
+  varTrue <- c(vAgeT, vActiveT, vRest, vHeightT,
+                vWeightT, vBmiT),
+  nObs <- nObs,
+  nTrue <- nTrue
+)
+```
+
+
+```{r des, results='hold'}
+kbl(tab2, caption = "Means and variances in true and observed dataset",
+    booktabs = T,
+    col.names = c("Variables", "M obs", "M true", 
+                "var obs", "var true", "N obs", "N true")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  footnote(
+    general_title = "Note.",
+    general = "obs = Observed Dataset, true = True Dataset")
+```
+
+
+## Categorical variables{#data2}
+
+The categorical variables in both data sets are *smoke*, *sex* and *intensity*. *Smoke* and *sex* both have two levels ("no" and "yes" for smoke and "male" and "female" for sex), while *intensity* has three levels ("low", "moderate", and "high"). 
+  Despite differences in the number of observed values between the data sets, differences between groups remain unchanged. For example, there are more males than females in both data sets and more non-smokers than smokers. Also, in both data sets, more males reported smoking than females. The most frequently reported workout intensity for both males and females in the two data sets is moderate, followed by low and high. 
+
+```{r cat1, results = 'hold'}
+tabm4 <- xtabs(~ sex+smoke+intensity, data= data0)
+tabc4 <- round(prop.table(tabm4), 3)
+
+tabm5 <- xtabs(~ sex+smoke+intensity, data= data1)
+tabc5 <- round(prop.table(tabm5), 3)
+
+
+kbl(tabc4, caption = "proportion table of categorical variables in observed data",
+    longtable = T,
+    booktabs = T
+    ) %>% 
+  kable_styling(latex_options = c("repeat_header")) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") 
+```
+
+\newpage
+
+```{r cat2, results='hold'}
+kbl(tabc5, caption = "proportion table of categorical variables in true data",
+    longtable = T,
+    booktabs = T
+    ) %>% 
+  kable_styling(latex_options = c("repeat_header")) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") 
+
+```
+
+## Correlations{#data3}
+
+As shown in Table \@ref(tab:corObs) and Table \@ref(tab:corTrue), the correlations between the variables of the observed data set are slightly different from the correlations between variables of the true data. Although most of the correlations are almost identical, a few correlations are negative in the observed data and positive in the true data. This effect also occurs vice versa. In example, the correlation between the variables smoke and age of the observed data set is positive (*r* = 0.01), albeit almost 0. In contrast, the correlation for these variables in the true data set is negative (*r* = -0.05). 
+  However, the impact of missing data on the correlations appears to be minor, as the difference in correlation coefficients between the two data sets is negligible. Although some correlations differ in valency between the data sets, the correlation coefficients remain close to 0 and thus, do not distort inferences made with the observed data set.
+
+
+```{r corObs, results = 'show' }
+dataCor <- data0
+dataCor$smoke <- as.numeric(dataCor$smoke)
+dataCor$sex <- as.numeric(dataCor$sex)
+dataCor$intensity <- as.numeric(dataCor$intensity)
+cor1 <- round(cor(dataCor, use = "pairwise.complete.obs"), 2)
+
+kbl(cor1, caption = "Correlations of observed data", 
+    longtable = T,
+    booktabs = T) %>% 
+  kable_classic(full_width = FALSE, html_font = "Cambria") %>% 
+  kable_styling(latex_options = c("repeat_header"))
+
+
+```
+
+
+```{r corTrue, results = 'show' }
+dataCorT <- data1
+dataCorT$smoke <- as.numeric(dataCorT$smoke)
+dataCorT$sex <- as.numeric(dataCorT$sex)
+dataCorT$intensity <- as.numeric(dataCorT$intensity)
+cor2 <- round(cor(dataCorT, use = "pairwise.complete.obs"), 2)
+
+kbl(cor2, caption = "Correlations of true data",
+    booktabs = T) %>% 
+  kable_classic(full_width = FALSE, html_font = "Cambria" )
+
+
+```
+
+\newpage
+
+# Regression{#data4}
+
+## Answering the research question
+
+When examining Table \@ref(tab:reg) *Regression analysis of True and Observed data* we observe several differences in the beta coefficients, standard error, and p-values. The table contains variables with missing values and an interaction effect. Although almost all beta coefficients are nearly equal, the beta coefficients of the observed data set are systematically underestimated. This underestimation is especially the case for *sexfemale*, as the difference between the beta coefficients is almost 9.0. Making inferences based on the observed data set would lead to underestimating the effect of sex on active hear rate.
+  Regarding the standard errors, missing data caused these parameters of the observed data set to be systematically overestimated. Larger standard errors contribute to the possibility of making a type II error, as is the case in our data set. For example, the larger standard errors in the observed data set might have played a role in the variables *sexfemale* and the interaction  *bmi:sexfemale* turning non-significant. These variables would wrongly be neglected when making inferences with the model based on the observed data. 
+  Concluding, the missing data causes the standard errors to be greater, resulting in less accurate beta coefficients. Moreover, some p-values turn out non-significant, caused by underestimated beta coefficients. The model based on observed data leads thus to inaccurate inferences.
+
+
+```{r}
+fit1 <- lm(active ~ age + bmi*sex + smoke, data=data0)
+fit2 <- lm(active ~ age + bmi*sex + smoke, data=data1)
+coef1 <- round(fit1$coefficients, 3)
+coef2 <- round(fit2$coefficients, 3)
+SE1 <- round(summary(fit1)$coefficients[,2], 2)
+SE2 <- round(summary(fit2)$coefficients[,2], 2)
+pVal1 <- round(summary(fit1)$coefficients[,4], 3)
+pVal2 <- round(summary(fit2)$coefficients[,4], 3)
+
+
+tab3 <- data.frame(
+  coefObs <-  coef1,
+  seObs <- SE1,
+  pObs <- pVal1,
+  coefTrue <- coef2,
+  seTrue <- SE2,
+  pTrue <- pVal2)
+
+```
+
+```{r reg, results='hold'}
+
+kbl(tab3, caption = "Regression analysis of True (N=306) and Observed Data (N=155)",
+    booktabs = T,
+    col.names = c("b", "SE", "p",
+                 "b", "SE", "p")
+    ) %>% 
+  add_header_above(c("", "Observed Data" = 3, "True Data" = 3)) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+\newpage
+
+# Missingness{#miss}
+
+
+There are 540 missing values. 0 for age, 0 for sex, 0 for intensity, 0 for rest, 58 for smoke, 92 for height, 93 for bmi, 123 for active, and 174 for weight. Moreover, there are 132 completely observed rows, 15 rows with one missing value, 37 rows with two missing values, 52 rows with three missing values, 55 rows with four missing values, 15 rows with five missing values.
+  The missingness in the data is non-monotone because the variable with the least missing values (*smoke*) has observed values for other variables with more missingness (e.g., *smoke* and *bmi*). The missingness would be monotone if the variable with the least missing values (*smoke*), would have missing values on all other variables with more missingness (e.g., *height*). Interestingly, a monotone pattern is only the case for *smoke* and *weight*.
+
+
+```{r misspat, fig.cap = "pattern of the missingness", fig.show='hold', out.width = "50%"}
+md.pattern(data0)
+gg_miss_var(data0)
+```
+
+```{r, include=TRUE}
+for (i in data0$weight) {
+  if (is.na(data0$weight[i])) {
+    i = (data0$bmi*(data0$height/100)^2) 
+  }
+  else {
+    i = i
+  }
+  data0["weight"] = i
+}
+```
+
+
+
+
+```{r}
+#Function to calculate the mean difference for numeric variables
+meanDif <- function(x, y) {
+  mVar <- is.na(x)
+  means = t.test(y ~ mVar)
+  return(means)
+}  
+
+# Function to calculate the chi square for categorical variables
+catDif <- function(x, y) {
+  mVar = is.na(x)
+  table = table(y, mVar)
+  diff = chisq.test(table(y, mVar))
+  return(diff)
+}
+
+
+# Function to visualize where the missing data is coming from
+plotMiss <- function(x, y, data, xlab, ylab) {
+  p <- ggplot(data,
+         aes(x = x,
+             y = y))+
+    labs(y = ylab, x = xlab) +
+    geom_miss_point()
+  return(p)
+}
+```
+
+
+```{r}
+data2 = data1
+data3 = data0
+data2["mWeight"] = is.na(data0$weight)
+data2["mHeight"] = is.na(data0$height)
+data2["mBmi"] = is.na(data0$bmi)
+data2["mActive"] = is.na(data0$active)
+data2["mSmoke"] = is.na(data0$smoke)
+data3["mWeight"] = is.na(data0$weight)
+data3["mHeight"] = is.na(data0$height)
+data3["mBmi"] = is.na(data0$bmi)
+data3["mActive"] = is.na(data0$active)
+data3["mSmoke"] = is.na(data0$smoke)
+```
+
+
+## Looking for the missingness
+
+In this section, we will investigate whether the mean of the missing values differs significantly from the mean of the observed values. This will be done do by using a paired sampled t-test for the numeric variables. To compare the mean of the missing values with the true values, we computed a logical vector for each vector that has missing observations. The missingness vectors have the value `TRUE` for all missing entries and `FALSE` for all observed entries. These missingness vectors will be used as a grouping variable in the true data set to compare the missing values with the observed values. 
+For smoke, which is a categorical variable, we will use a $x^2$ test. 
+  For all variables, the missing values have a similar distribution as the observed values. However, the distribution for the variable smoke is not shown, as this is a categorical variable and does thus not have a distribution. The means of the variables from both data sets are marginally different, but the differences are non-significant, neither for smoke. Hence, the missing values are similar to the observed values.
+
+
+```{r}
+# Doing t-test to calculate whether the difference of the mean in the observed and true dataset is significant
+
+outW <- meanDif(data0$weight, data1$weight) 
+tOutW <- round(outW$statistic, 3) 
+pOutW <- round(outW$p.value, 3) 
+
+outH <- meanDif(data0$height, data1$height)
+tOutH <- round(outH$statistic, 3)
+pOutH <- round(outH$p.value, 3)
+
+outB <- meanDif(data0$bmi, data1$bmi)
+tOutB <- round(outB$statistic, 3)
+pOutB <- round(outB$p.value, 3)
+
+outA <- meanDif(data0$active, data1$active)
+tOutA <- round(outA$statistic, 3)
+pOutA <- round(outA$p.value, 3)
+
+outS <- catDif(data0$smoke, data1$smoke)
+cOutS <- round(outS$statistic, 3)
+pOutS <- round(outS$p.value, 3)
+
+
+```
+
+```{r mnar-t, results='hide'}
+
+tab_mnar <- data.frame(
+  Variables <- c("Weight", "Height", "Bmi", "Active"),
+  meanFalse <- c("73.90", "174.50", "24.11", "95.58"),
+  meanTrue <- c("73.17", "172.83", "23.95", "93.95"),
+  tstat <- c(tOutW, tOutH, tOutB, tOutA),
+  pval <- c(pOutW, pOutH, pOutB, pOutA)
+)
+
+kbl(tab_mnar, caption = "Difference in means of observed data and missing data",
+    booktabs = T,
+    col.names = c("variables", "M obs", "M true", "t", "p")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+```
+
+
+
+
+```{r mnar-plot, fig.cap="Comparing the distribution of the observed and true dataset", out.width="50%", fig.align='center', fig.show='hide'}
+mnar1 <- ggplot(data2, aes(x=weight)) +
+  geom_histogram(bins = 20, color = "black", fill = "white") +
+  facet_grid(mWeight ~ .)
+mnar2 <- ggplot(data2, aes(x=height)) +
+  geom_histogram(bins = 20, color = "black", fill = "white") +
+  facet_grid(mHeight ~ .)
+mnar3 <- ggplot(data2, aes(x=bmi)) +
+  geom_histogram(bins = 20, color = "black", fill = "white") +
+  facet_grid(mBmi ~ .)
+mnar4 <- ggplot(data2, aes(x=active)) +
+  geom_histogram(bins = 20, color = "black", fill = "white") +
+  facet_grid(mActive ~ .)
+
+ggarrange(mnar1, mnar2, mnar3, mnar4,
+  labels = c("A", "B", "C", "D"),
+  ncol = 2, nrow = 2)
+```
+
+
+## Missingness of weight{#missW}
+
+```{r}
+mWeightMale <- data3 %>% 
+  filter(sex == "male") %>% 
+  pull(mWeight)
+
+mWeightFemale <- data3 %>% 
+  filter(sex == "female") %>% 
+  pull(mWeight)
+
+mWeightSmoke <- data3 %>% 
+  filter(smoke == "yes") %>% 
+  pull(mWeight)
+
+mWeightNosmoke <- data3 %>% 
+  filter(smoke == "no") %>% 
+  pull(mWeight)
+
+outW1 <- catDif(data3$weight, data3$sex)
+cOutW1 <- round(outW1$statistic, 3)
+pOutW1 <- round(outW1$p.value, 3)
+
+outW2 <- catDif(data3$weight, data3$smoke)
+cOutW2 <- round(outW2$statistic, 3)
+pOutW2 <- round(outW2$p.value, 3) 
+
+outW3 <- catDif(data0$weight, data0$intensity)
+cOutW3 <- round(outW3$statistic, 3)
+pOutW3 <- round(outW3$p.value, 3)
+
+outW4 <- t.test(rest ~ mWeight, data = data3)
+tOutW4 <- round(outW4$statistic, 3)
+pOutW4 <- round(outW4$p.value, 3)
+
+outW5 <- t.test(age ~ mWeight, data = data3)
+tOutW5 <- round(outW5$statistic, 3)
+pOutW5 <- round(outW5$p.value, 3)
+
+outW6 <- t.test(height ~ mWeight, data = data3)
+tOutW6 <- round(outW6$statistic, 3)
+pOutW6 <- round(outW6$p.value, 3)
+
+outW7 <- t.test(bmi ~ mWeight, data = data3)
+tOutW7 <- round(outW7$statistic, 3)
+pOutW7 <- round(outW7$p.value, 3)
+
+outW8 <- t.test(active ~ mWeight, data = data3)
+tOutW8 <- round(outW8$statistic, 3)
+pOutW8 <- round(outW8$p.value, 3)
+
+```
+
+
+Looking at the differences of the missingness of weight in Table \@ref(tab:missW), no significant differences can be found in the means of the numeric variables in the data. However, the difference in mean of active is relatively high. It might be that this difference is not significant due to the low amount of observations of active when weight is missing ($N$ = 36).
+|Considering the categorical data, the missingness of weight on sex has no significant difference, where $x^2 =$ `r cOutW1`, $p =$ `r pOutW1`. For the missingness of weight on smoke no significant difference was found also $x^2 =$ `r cOutW2`, $p =$ `r pOutW2`. Lastly, the missingness of weight on intensity is not significant: $x^2 =$ `r cOutW3`, $p =$ `r pOutW3`.  
+ | All results are non-significant; hence weight is not missing at random. 
+  
+\newpage
+
+```{r missW, results='hold'}
+
+tab_tW <- data.frame(
+  variables <- c("rest", "age", "height", "bmi", "active"),
+  meanObs <- c("69.56", "38.16", "174.28", "24.11", "91.54"),
+  meanTrue <- c("70.17", "38.98", "175.39", "24.12", "96.81"),
+  tValW <- c(tOutW4, tOutW5, tOutW6, tOutW7, tOutW8),
+  pValW <- c(pOutW4, pOutW5, pOutW6, pOutW7, pOutW8)
+)
+
+
+kbl(tab_tW, caption = "Difference in means of missingness of Weight",
+    booktabs = T,
+    col.names = c("variables", "$M obs", "M true", "t", "p")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+
+```
+
+The three bar plots in Figure \@ref(fig:mar-weight1) show a visualization of how the missing data in the categorical columns is divided. The first plot shows us that there is almost no difference between missing values in weight for being a man or female in the sex column. The second plot also shows that there is almost no difference between missing values in the weight column for smokers and non-smokers in the smoke column. The third column shows that how lower the intensity is the less missing values in weight you can expect.
+
+```{r mar-weight1, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of weight is MAR", fig.subcap=c('Sex', 'Smoke', 'Intensity'), fig.ncol = 3, fig.align='center'}
+marWeight1 <- data3 %>% select(sex, weight) %>% spineMiss()
+marWeight2 <- data3 %>% select(smoke, weight) %>% spineMiss()
+marWeight3 <- data3 %>% select(intensity, weight) %>% spineMiss()
+marWeight4 <- plotMiss(data3$rest, data3$weight, data3, xlab = "rest", ylab= "weight")
+marWeight5 <- plotMiss(data3$age, data3$weight, data3, xlab = "age", ylab = "weight")
+marWeight6 <- plotMiss(data3$height, data3$weight, data3, xlab = "height", ylab = "weight")
+marWeight7 <- plotMiss(data3$bmi, data3$weight, data3, xlab = "bmi", ylab = "weight")
+marWeight8 <- plotMiss(data3$active, data3$weight, data3, xlab = "active", ylab = "weight")
+
+marWeight1
+marWeight2
+marWeight3
+```
+
+
+The five scatterplots in Figure \@ref(fig:mar-weight2) show a visualization of how the missing data is divided in the rest of the columns. In the first two plots between weight and rest or age is a clear trend where all the values with a low weight are missing, and everything above that is not. The two plots after that between weight and height or bmi show the same thing, but also a cluster of missing values when both columns have low values. The last column between weight and active shows a clear trend where low values for either column results in missing values with a cluster where both columns have low values.
+
+
+\newpage
+
+```{r mar-weight2, echo=FALSE, fig.show='asis', out.width = "25%", fig.cap = "Looking whether the missingness of weight is MAR", fig.subcap=c('Rest', 'Age', 'Height', 'Bmi', 'Active'), fig.ncol = 3, fig.align='center'}
+marWeight4
+marWeight5
+marWeight6
+marWeight7
+marWeight8
+```
+
+
+## Missingness of height{#missH}
+
+```{r}
+outH1 <- catDif(data3$height, data3$sex)
+cOutH1 <- round(outW1$statistic, 3)
+pOutH1 <- round(outW1$p.value, 3)
+
+outH2 <- catDif(data3$height, data3$smoke)
+cOutH2 <- round(outH2$statistic, 3)
+pOutH2 <- round(outH2$p.value, 3) 
+
+outH3 <- catDif(data0$height, data0$intensity)
+cOutH3 <- round(outH3$statistic, 3)
+pOutH3 <- round(outH3$p.value, 3)
+
+outH4 <- t.test(rest ~ mHeight, data = data3)
+tOutH4 <- round(outH4$statistic, 3)
+pOutH4 <- round(outH4$p.value, 3)
+
+outH5 <- t.test(age ~ mHeight, data = data3)
+tOutH5 <- round(outH5$statistic, 3)
+pOutH5 <- round(outH5$p.value, 3)
+
+outH6 <- t.test(bmi ~ mHeight, data = data3)
+tOutH6 <- round(outH6$statistic, 3)
+pOutH6 <- round(outH6$p.value, 3)
+
+outH7 <- t.test(active ~ mHeight, data = data3)
+tOutH7 <- round(outH7$statistic, 3)
+pOutH7 <- round(outH7$p.value, 3)
+```
+
+
+Looking at the differences of the missingness of height in Table \@ref(tab:missH), no significant differences can be found in the means of the numeric variables in the data. Similar to the missingness of weight, the difference in mean of `active` is relatively high. Again, it might be that this difference is not significant due to the low amount of observations of `active` when height is missing ($N$ = 40).
+Considering the categorical data, the missingness of height on sex has no significant difference, where $x^2 =$ `r cOutH1`, $p =$ `r pOutH1`. For the missingness of height on smoke no significant difference was found also $x^2 =$ `r cOutH2`, $p =$ `r pOutH2`. Lastly, the missingness of weight on intensity is not significant: $x^2 =$ `r cOutH3`, $p =$ `r pOutH3`.  
+All results are insignificant, hence height is not missing at random. 
+
+
+```{r missH, results='hold'}
+
+tab_tH <- data.frame(
+  variables <- c("rest", "age", "bmi", "active"),
+  meanObs <- c("69.93", "38.66", "24.11", "91.74"),
+  meanTrue <- c("69.60", "38.18", "24.11", "99.05"),
+  tValH <- c(tOutH4, tOutH5, tOutH6, tOutH7),
+  pValH <- c(pOutH4, pOutH5, pOutH6, pOutH7)
+)
+
+
+tab2 <- kbl(tab_tH, caption = "Difference in means of missingness of Height",
+    booktabs = T,
+    col.names = c("variables", "M obs", "M true", "t", "p")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+
+tab2
+```
+
+The three bar plots in Figure \@ref(fig:mar-height1) show a visualization of how the missing data in the categorical columns is divided. The first plot shows us almost no difference between missing values in height for being a man or female in the sex column. The second plot also shows virtually no difference between missing values in the height column for smokers and non-smokers in the smoke column. The third column shows almost no difference between missing values in the height column for high and moderate-intensity but less missing values in the low-intensity category. 
+
+\newpage
+
+
+```{r mar-height1, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of height is MAR", fig.subcap=c('Sex', 'Smoke', 'Intensity'), fig.ncol = 3, fig.align='center'}
+
+marHeight1 <- data3 %>% select(sex, height) %>% spineMiss()
+marHeight2 <- data3 %>% select(smoke, height) %>% spineMiss()
+marHeight3 <- data3 %>% select(intensity, height) %>% spineMiss()
+
+
+
+
+marHeight4 <- plotMiss(data3$rest, data3$height, data3, xlab = "rest", ylab= "height")
+marHeight5 <- plotMiss(data3$age, data3$height, data3, xlab = "age", ylab = "height")
+marHeight6 <- plotMiss(data3$bmi, data3$height, data3, xlab = "bmi", ylab = "height")
+marHeight7 <- plotMiss(data3$active, data3$height, data3, xlab = "active", ylab = "height")
+
+marHeight1
+marHeight2
+marHeight3
+
+```
+
+The four scatterplots in Figure \@ref(fig:mar-height2) show how the missing data is divided into the rest of the columns. There is a clear trend in the first two plots between height and rest or age where all the values with a low height are missing and everything above that is not. The two plots after that between height and bmi or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+
+```{r mar-height2, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of height is MAR", fig.subcap=c('Rest', 'Age', 'Bmi', 'Active'), fig.ncol = 3, fig.align='center'}
+marHeight4
+marHeight5
+marHeight6
+marHeight7
+```
+
+
+## Missingness of Active
+
+```{r}
+outA1 <- catDif(data3$active, data3$sex)
+cOutA1 <- round(outA1$statistic, 3)
+pOutA1 <- round(outA1$p.value, 3)
+
+outA2 <- catDif(data3$active, data3$smoke)
+cOutA2 <- round(outA2$statistic, 3)
+pOutA2 <- round(outA2$p.value, 3) 
+
+outA3 <- catDif(data0$active, data0$intensity)
+cOutA3 <- round(outA3$statistic, 3)
+pOutA3 <- round(outA3$p.value, 3)
+
+outA4 <- t.test(rest ~ mActive, data = data3)
+tOutA4 <- round(outA4$statistic, 3)
+pOutA4 <- round(outA4$p.value, 3)
+
+outA5 <- t.test(age ~ mActive, data = data3)
+tOutA5 <- round(outA5$statistic, 3)
+pOutA5 <- round(outA5$p.value, 3)
+
+outA6 <- t.test(height ~ mActive, data = data3)
+tOutA6 <- round(outA6$statistic, 3)
+pOutA6 <- round(outA6$p.value, 3)
+
+outA7 <- t.test(bmi ~ mActive, data = data3)
+tOutA7 <- round(outA7$statistic, 3)
+pOutA7 <- round(outA7$p.value, 3)
+
+outA8 <- t.test(weight ~ mActive, data = data3)
+tOutA8 <- round(outA8$statistic, 3)
+pOutA8 <- round(outA8$p.value, 3)
+```
+
+Looking at the differences of the missingness of active in Table \@ref(tab:missA), no significant differences can be found in the means of the numeric variables in the data. However, both `bmi` ($p =$ `r pOutA7`) and `weight` ($p =$ `r pOutA8`) are relatively close to the significance threshold of 0.05. Considering the categorical data, the missingness of active on sex has no significant difference, where $x^2 =$ `r cOutA1`, $p =$ `r pOutA1`. For the missingness of active on smoke no significant difference was found also $x^2 =$ `r cOutA2`, $p =$ `r pOutA2`. Lastly, the missingness of weight on intensity is not significant: $x^2 =$ `r cOutA3`, $p =$ `r pOutA3`. All results are insignificant, hence active is not considered to be missing at random. 
+
+
+
+```{r missA, results='hold'}
+
+tab_tA <- data.frame(
+  variables <- c("rest", "age", "height", "bmi", "weight"),
+  meanObs <- c("69.02", "37.96", "174.41","23.83", "72.94"),
+  meanTrue <- c("71.03", "39.35", "174.77", "24.85", "79.38"),
+  tValA <- c(tOutA4, tOutA5, tOutA6, tOutA7, tOutA8),
+  pValA <- c(pOutA4, pOutA5, pOutA6, pOutA7, pOutA8)
+)
+
+
+kbl(tab_tA, caption = "Difference in means of missingness of Active",
+    booktabs = T, 
+    col.names = c("variables", "M obs", "M true", "t", "p")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+
+
+```
+
+
+The three bar plots in Figure \@ref(fig:mar-active1) show a visualization of how the missing data in the categorical columns is divided. The first plot shows us that the female category in sex has less missing values in the active column than the male category. The second column shows that smokers have fewer missing values than non-smokers in the active column. The third column shows almost no difference between missing values in the active column for the moderate and low-intensity category but more missing values in the high-intensity category. 
+
+
+
+```{r mar-active1, echo=FALSE, out.width = "36%", fig.cap = "Looking whether the missingness of active is MAR", fig.subcap = c('Sex', 'Smoke', 'Intensity'), fig.ncol = 3, fig.align='center'}
+marActive1 <- data3 %>% select(sex, active) %>% spineMiss()
+marActive2 <- data3 %>% select(smoke, active) %>% spineMiss()
+marActive3 <- data3 %>% select(intensity, active) %>% spineMiss()
+marActive4 <- plotMiss(data3$rest, data3$active, data3, xlab = "rest", ylab= "active")
+marActive5 <- plotMiss(data3$age, data3$active, data3, xlab = "age", ylab = "active")
+marActive6 <- plotMiss(data3$height, data3$active, data3, xlab = "height", ylab = "active")
+marActive7 <- plotMiss(data3$bmi, data3$active, data3, xlab = "bmi", ylab = "active")
+marActive8 <- plotMiss(data3$weight, data3$active, data3, xlab = "weight", ylab = "active")
+
+marActive1
+marActive2
+marActive3
+```
+
+The five scatterplots in Figure \@ref(fig:mar-active2) show a visualization of how the missing data is divided into the rest of the columns. In the first two plots between active and rest or age, there is a clear trend where all the values with a low active are missing, and everything above that is not. The three plots after that between active and height, bmi, or weight show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+
+\newpage
+
+```{r mar-active2, echo=FALSE, out.width = "25%", fig.cap = "Looking whether the missingness of active is MAR", fig.subcap = c('Rest', 'Age', 'Height', 'Bmi', 'Weight'), fig.ncol = 3, fig.align='center'}
+
+marActive4
+marActive5
+marActive6
+marActive7
+marActive8
+```
+
+## Missingness of Bmi{#missB}
+
+
+```{r}
+outB1 <- catDif(data3$bmi, data3$sex)
+cOutB1 <- round(outB1$statistic, 3)
+pOutB1 <- round(outB1$p.value, 3)
+
+outB2 <- catDif(data3$bmi, data3$smoke)
+cOutB2 <- round(outB2$statistic, 3)
+pOutB2 <- round(outB2$p.value, 3) 
+
+outB3 <- catDif(data3$bmi, data3$intensity)
+cOutB3 <- round(outB3$statistic, 3)
+pOutB3 <- round(outB3$p.value, 3)
+
+outB4 <- t.test(rest ~ mBmi, data = data3)
+tOutB4 <- round(outB4$statistic, 3)
+pOutB4 <- round(outB4$p.value, 3)
+
+outB5 <- t.test(age ~ mBmi, data = data3)
+tOutB5 <- round(outB5$statistic, 3)
+pOutB5 <- round(outB5$p.value, 3)
+
+outB6 <- t.test(height ~ mBmi, data = data3)
+tOutB6 <- round(outB6$statistic, 3)
+pOutB6 <- round(outB6$p.value, 3)
+
+outB7 <- t.test(active ~ mBmi, data = data3)
+tOutB7 <- round(outB7$statistic, 3)
+pOutB7 <- round(outB7$p.value, 3)
+```
+
+Looking at the differences of the missingness of bmi in Table \@ref(tab:missB), no significant differences can be found in the means of the numeric variables in the data. 
+
+Considering the categorical data, the missingness of bmi on sex has no significant difference, where $x^2 =$ `r cOutB1`, $p =$ `r pOutB1`. For the missingness of bmi on smoke no significant difference was found also $x^2 =$ `r cOutB2`, $p =$ `r pOutB2`. Lastly, the missingness of bmi on intensity is not significant: $x^2 =$ `r cOutB3`, $p =$ `r pOutB3`.  
+
+All results are insignificant, hence bmi is considered not to be missing at random. 
+
+
+```{r missB, results='hold'}
+
+tab_tB <- data.frame(
+  variables <- c("rest", "age", "height", "active"),
+  meanObs <- c("69.84", "38.35", "174.28", "92.12"),
+  meanTrue <- c("69.81", "38.90", "175.39", "95.11"),
+  tValB <- c(tOutB4, tOutB5, tOutB6, tOutB7),
+  pValB <- c(pOutB4, pOutB5, pOutB6, pOutB7)
+)
+
+
+kbl(tab_tB, caption = "Difference in means of missingness of Bmi",
+    booktabs = T,
+    col.names = c("variables", "M obs", "M true", "t", "p")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+
+```
+
+The three bar plots in Figure \@ref(fig:mar-bmi1) show a visualization of how the missing data in the categorical columns is divided. The first plot shows us almost no difference between missing values in bmi for being a man or female in the sex column. The second plot also indicates practically no difference between missing values in the bmi column for smokers and non-smokers in the smoke column. The third column shows almost no difference between missing values in the bmi column for the moderate and low-intensity category, but more missing values in the high-intensity category.
+
+\newpage
+
+
+
+```{r mar-bmi1, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of bmi is MAR", fig.subcap=c('Sex', 'Smoke', 'Intensity'), fig.ncol = 3, fig.align='center'}
+marBmi1 <- data3 %>% select(sex, bmi) %>% spineMiss()
+marBmi2 <- data3 %>% select(smoke, bmi) %>% spineMiss()
+marBmi3 <- data3 %>% select(intensity, bmi) %>% spineMiss()
+marBmi4 <- plotMiss(data3$rest, data3$bmi, data3, xlab = "rest", ylab= "bmi")
+marBmi5 <- plotMiss(data3$age, data3$bmi, data3, xlab = "age", ylab = "bmi")
+marBmi6 <- plotMiss(data3$height, data3$bmi, data3, xlab = "height", ylab = "bmi")
+marBmi7 <- plotMiss(data3$active, data3$bmi, data3, xlab = "active", ylab = "bmi")
+
+
+marBmi1
+marBmi2
+marBmi3
+```
+
+The four scatterplots  in Figure \@ref(fig:mar-bmi2) show a visualization of how the missing data is divided into the rest of the columns. In the first two plots between bmi and rest or age there is a clear trend where all the values with a low bmi are missing and everything above that is not. The two plots after that between bmi and height or active show a clear trend where low values for either column result in missing values with a cluster where both columns have low values.
+
+```{r mar-bmi2, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of bmi is MAR", fig.subcap=c('Rest', 'Age', 'Height', 'Active'), fig.ncol = 3, fig.align='center'}
+marBmi4
+marBmi5
+marBmi6
+marBmi7
+```
+
+
+
+## Missingness of Smoke{#MissS}
+
+
+```{r}
+outS1 <- catDif(data3$smoke, data3$sex)
+cOutS1 <- round(outS1$statistic, 3)
+pOutS1 <- round(outS1$p.value, 3)
+
+outS2 <- catDif(data3$smoke, data3$intensity)
+cOutS2 <- round(outS2$statistic, 3)
+pOutS2 <- round(outS2$p.value, 3) 
+
+outS3 <- t.test(rest ~ mSmoke, data = data3)
+tOutS3 <- round(outS3$statistic, 3)
+pOutS3 <- round(outS3$p.value, 3)
+
+outS4 <- t.test(age ~ mSmoke, data = data3)
+tOutS4 <- round(outS4$statistic, 3)
+pOutS4 <- round(outS4$p.value, 3)
+
+outS5 <- t.test(height ~ mSmoke, data = data3)
+tOutS5 <- round(outS5$statistic, 3)
+pOutS5 <- round(outS5$p.value, 3)
+
+outS6 <- t.test(bmi ~ mSmoke, data = data3)
+tOutS6 <- round(outS6$statistic, 3)
+pOutS6 <- round(outS6$p.value, 3)
+
+outS7 <- t.test(weight ~ mSmoke, data = data3)
+tOutS7 <- round(outS7$statistic, 3)
+pOutS7 <- round(outS7$p.value, 3)
+
+```
+
+Looking at the differences of the missingness of smoke in Table \@ref(tab:missS), no significant differences can be found in the means of the numeric variables in the data.
+
+Considering the categorical data, the missingness of weight on sex has a significant difference, where $x^2 =$ `r cOutS1`, $p =$ `r pOutS1`. The missingness of smoke on intensity is not significant: $x^2 =$ `r cOutS2`, $p =$ `r pOutS2`.  
+
+The results indicate that missingness of smoke is missing at random in relation with sex. 
+
+```{r missS, results='hold'}
+
+tab_tS <- data.frame(
+  variables <- c("rest", "age", "height", "bmi", "weight"),
+  meanObs <- c("70.08", "38.03", "174.41", "24.00", "73.74"),
+  meanTrue <- c("68.72", "40.57", "175.12", "24.85", "76.13"),
+  tValS <- c(tOutS3, tOutS4, tOutS5, tOutS6, tOutS7),
+  pValS <- c(pOutS3, pOutS4, pOutS5, pOutS6, pOutS7)
+)
+
+
+kbl(tab_tS, caption = "Difference in means of missingness of Smoke",
+    booktabs = T, 
+    col.names = c("variables", "M obs", "M true", "t", "p")
+    ) %>% 
+  kable_classic(full_width = F, html_font = "Cambria")
+
+
+```
+
+The seven-bar plots in Figures \@ref(fig:mar-smoke1) and \@ref(fig:mar-smoke2) show how the missing data of smoke is divided into the other columns. The first plot shows us that the female category in sex has fewer missing values in the active column than the male category. The second plot shows almost no difference between missing values in the intensity column for the high and low category, but fewer missing values in the moderate-intensity category. The third plot shows that the missingness of smoke on rest is equally divided with two spikes where rest is lower than 55 and higher than 90. There are no more missing values after these spikes, except for one more spike where the rest is 40. The fourth plot shows that the missingness of smoke on age is equally divided with a spike where age is higher than 60. The fifth plot shows how smaller or higher (than a height of 170-175) the height gets, the more missing values there are in the smoke column, except for when the height is around 205. Then there are close to no missing values. The sixth plot shows that the missingness of smoke on bmi is equally divided except for when bmi is at its lowest or highest. Then there are almost no missing values. The seventh plot shows that the missingness of smoke on weight is equally divided, with one spike in the middle between weight of 70 and 80. There are almost no missing values when weight is at its lowest or highest.
+
+
+```{r mar-smoke1, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of smoking is MAR", fig.subcap=c('Sex', 'Intensity', 'Rest'), fig.ncol = 3, fig.align='center'}
+marSmoke1 <- data3 %>% select(sex, smoke) %>% spineMiss()
+marSmoke2 <- data3 %>% select(intensity, smoke) %>% spineMiss()
+marSmoke3 <- data3 %>% select(rest, smoke) %>% spineMiss()
+
+
+marSmoke1
+marSmoke2
+marSmoke3
+```
+
+```{r mar-smoke2, echo=FALSE, fig.show='hold', out.width = "33%", fig.cap = "Looking whether the missingness of smoking is MAR", fig.subcap=c('Age', 'Height', 'Bmi', 'Weight'), fig.ncol = 3, fig.align='center'}
+marSmoke4 <- data3 %>% select(age, smoke) %>% spineMiss()
+marSmoke5 <- data3 %>% select(height, smoke) %>% spineMiss()
+marSmoke6 <- data3 %>% select(bmi, smoke) %>% spineMiss()
+marSmoke7 <- data3 %>% select(weight, smoke) %>% spineMiss()
+
+marSmoke4
+marSmoke5
+marSmoke6
+marSmoke7
+
+```
+
+\newpage
+
+# Imputations{#Imp}
+
+After observing the data for missing values, we now try to solve the missingness problem by doing multiple imputations with the package `mice.` Considering our missing data are MAR, mice should work just fine. In order to answer the research question with the imputed data, we will follow the main steps in multiple imputations following [van Buuren, 2018](https://stefvanbuuren.name/fimd/workflow.html), shown in Figure \@ref(fig:image). In the first instance, we will use the default settings to impute the missingness, and this will be further elaborated in Section [5.1](#defImp) section. After the default imputations, we will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. The evaluation will be done in Section [5.1.1](#evalImp). After evaluating the default imputations, in Section [5.1.2](#regImputed) we will look at the regressions of the imputed data and compare the outcomes with the regressions of the observed and true data. In Section [5.1.3](#fracMiss) we will evaluate the fraction of missing data in the pooled regression analysis. Lastly we will outline how the imputations can be improved by using more sophisticated imputations. This will be discussed in Section [5.1.4](#improveImp).   
+
+After doing the Default Imputations, we will try to improve the imputations by using Passive Imputation, described in Section [5.2](#passiveImp). We will evaluate the quality of the imputations by examining multiple plots about the convergence and the distribution. The evaluation will be done in Section [5.2.1](#evalPasImp). After evaluating the default imputations, in Section [5.2.2](#regImputed1) we will compare the regression outcomes of the observed, true, and both imputed data. In Section [5.2.3](#fracMissImp2) we will evaluate the fraction of missing data in the pooled regression analysis. Lastly we will outline how the imputations can be improved by using more sophisticated imputations. This will be discussed in Section [5.2.4](#imprImp2).  
+
+![Scheme of main steps in multiple imputation](Scheme.png "image"){#fig:image}
+
+
+
+
+
+## Default Imputations{#defImp}
+
+```{r}
+pred <- mice(data0)$predictorMatrix
+meth <- mice(data0)$method
+m <- mice(data0)$m
+max <- mice(data0)$maxit
+```
+
+```{r}
+methW <- meth["weight"]
+methH <- meth["height"]
+methB <- meth["bmi"]
+methA <- meth["active"]
+methS <- meth["smoke"]
+```
+
+As mentioned before, we will first use the default settings of `mice` to impute the missingness. In this section, we will describe them. 
+By default, `mice` will produce `r m` imputations and five iterations. An imputation is a replacement value for a missing value. The number of imputations represents the number of imputed data sets that mice creates. Thus, with the default `r m` imputations, five datasets are created with imputed data that differ in what values are imputed due to random variation. The random variation also has to do with the uncertainty about what value to impute [van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-nutshell.html#fig:miflow). In comparison to a single imputation method like mean imputation, the multiple imputation method (obviously) improves the imputation variability. Using a greater amount than just one imputation will result in more accurate standard errors, unbiased estimates, and better confidence intervals [(van Buuren, 2018)](https://stefvanbuuren.name/fimd/sec-howmany.html).
+
+The default methods that `mice` uses to impute the missing values are: `r methS` for smoke, `r methA` for active, `r methH` for height, `r methW` for weight, and `r methB` for bmi. The method for imputations depends on the measurement level of the target variable. Obviously, there are no methods for *age, sex, intensity, and rest* since they have no missing values. The `r methS` for smoke uses the Bayesian logistic regression method to impute missing data. The function will calculate the probability of 'Smoker' or 'Non-smoker' for each missing value to impute based on the information from the observations. When comparing the probability to some threshold (probably 50%), the function will impute 'Smoker' for any probability greater than 50% and 'Non-smoker' otherwise. The `r methA` for active, height, weight, and bmi uses the predictive mean matching method to impute missing data. This "pmm" method starts by defining a linear regression model. The missing values of these variables will be predicted based on observed values (donors) closest to the missing value in the same column. Then, one of these donors is selected randomly, and its value is used to replace the missing value.
+
+The number of iterations, which is 5 by default, represent the amount `mice` will iterate over the variables in each imputation. After imputation, convergence should be met for each variable. If not, one could for example try to enlarge the amount of iterations.
+
+Table \@ref(tab:predImp) provides an overview of the predictor matrix for the imputations. The 1's represent the column variables that will be used as a predictor to impute the row variable. Logically, the 0's will not be used as predictors for imputations. For example, for *bmi* all variables except bmi are used as predictors to impute bmi. 
+
+
+```{r predImp, results='hold'}
+kbl(pred, caption = "Predictor Matrix of Default Imputations") %>% 
+  kable_classic(full_width = FALSE, html_font = "Cambria" )
+```
+
+### Evaluating Default Imputations{#evalImp}
+
+As can be seen in the trace plots in \@ref(fig:convergence), the imputations, represented as lines, show little to no mix for the variables height, weight, and bmi. This weak convergence suggests that there is not enough information for a solution. The imputed values are thus not plausible. The imputations for smoke and active show a greater convergence. These variablies do thus not require a different imputation method. 
+
+```{r}
+imp <- mice(data0,
+            seed = 26011994,
+            print = FALSE)
+```
+
+```{r convergence, fig.show='hold', fig.cap="Trace plots of the imputations with default options", out.width = '40%', fig.align='center'}
+plot(imp)
+```
+
+The density plots in Figure \@ref(fig:density) show a variability of the imputed values, in line with the observed values. Futhermore, there appear no impossible values in the densityplots.
+
+```{r density, fig.cap="Density plots of the imputed values with default options", out.width="40%", fig.align='center'}
+densityplot(imp)
+```
+
+\newpage 
+
+The stripplot and boxplot for active, as shown in Figure \@ref(fig:stripplot1) and Figure \@ref(fig:boxplot1), further increases the validity of the imputation, as the imputed values show a wide variability. For height, and weight, the strip plots show almost no imputations on the lower and higher end. For bmi, the plots show almost no imputations on the higher end. This, however, is in line with the observed data. Based on the strip plots 
+alone, the imputations seem sensible.
+
+
+```{r stripplot1, fig.cap="Strip plots of the imputed values with default options", out.width="50%",  fig.align='center', fig.ncol = 2, fig.subcap=c('Active', 'Height', 'Weight', 'Bmi') }
+strip1Active <- stripplot(imp, active)
+strip1Height <- stripplot(imp, height)
+strip1Weight <- stripplot(imp, weight)
+strip1Bmi <- stripplot(imp, bmi)
+
+strip1Active
+strip1Height
+strip1Weight
+strip1Bmi
+```
+
+\newpage
+
+```{r boxplot1, fig.cap="Boxplots of the imputed values with default options", out.width="50%", fig.align='center',  fig.ncol = 2, fig.subcap=c('Active', 'Height', 'Weight', 'Bmi')}
+box1Active <- bwplot(imp, active)
+box1Height <- bwplot(imp, height)
+box1Weight <- bwplot(imp, weight)
+box1Bmi <- bwplot(imp, bmi)
+
+box1Active
+box1Height
+box1Weight
+box1Bmi
+```
+
+
+
+Although the density plots and strip plots for the imputations look acceptable, way me not use the imputed values as the imputation model has shown no convergence. We can hence not make inferences based on the imputed models and need another, more sophisticated model to acquire plausible imputations.
+
+
+
+
+### Regressions with Imputed data {#regImputed}
+
+In table \@ref(tab:regImp1) we present the regression analysis of the observed, imputed and true data. To start with, there are several differences between the observed data and the imputed data. For all predictors in our regression model, the beta coefficients are lower for the imputed data except for *smokeyes*. Thus, the degree of change for *active* has decreased for every predictor, except *smokeyes*. Furthermore, the standard errors around the beta coefficients have decreased for all predictors including the intercept. This suggests that the imputations resulted in more precise estimates for the beta coefficients. Also for every predictor except *smokeyes*, has the p-value increased for the imputed data. An increase in p-value corresponds to lesser significance of a predictor.
+
+Secondly, when comparing the imputed data to the true data, making inferences based on the imputed data is even worse than for the observed data. However, just for the predictor *smokeyes* it has gotten better. One would make the same inferences for *smokeyes* in the true data as for the imputed data. Only the standard error and the p-value for *smokeyes* are still a bit larger in the imputed data than for the true data.
+
+
+```{r}
+fitImp <- with(imp, lm(active ~ age + bmi*sex + smoke))
+est <- pool(fitImp)
+
+estImp <- summary(est)
+
+coef3 <- round(estImp$estimate, 3)
+SE3 <- round(estImp$std.error, 2)
+pVal3 <- round(estImp$p.value, 3)
+
+riv1 <- round(est$pooled$riv, 3)
+lambda1 <- round(est$pooled$lambda, 3)
+fmi1 <- round(est$pooled$fmi, 3)
+
+terms1 <- est$pooled$term
+
+```
+
+
+```{r}
+tabImp1 <- data.frame(
+  coefObs <-  coef1,
+  seObs <- SE1,
+  pObs <- pVal1,
+  coefImp <- coef3,
+  seImp <- SE3,
+  pImp <- pVal3,
+  coefTrue <- coef2,
+  seTrue <- SE2,
+  pTrue <- pVal2)
+
+```
+
+```{r regImp1, results='hold'}
+
+kbl(tabImp1, caption = "Regression analysis of the Observed, Imputed and True data",
+    booktabs = T,
+    col.names = c("b", "SE", "p",
+                 "b", "SE", "p",
+                 "b", "SE", "p")
+    ) %>% 
+  add_header_above(c("", "Observed Data (N=155)" = 3, "Imputed Data (N=306)" = 3, "True Data (N=306)" = 3)) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+### Evaluating the fraction of missing data {#fracMiss}
+
+In Table \@ref(tab:missInfo) we present information about the measures of missing values in the imputed data. *RIV* accords for the relative increase in variance, *lambda* is the proportion of the variation in the parameter caused by missing data and *FMI* is basically the same as lambda, but FMI also adjusts for the number of imputed datasets [(Heymans & Eekhout, 2019)](https://bookdown.org/mwheymans/bookmi/measures-of-missing-data-information.html). 
+
+In Table \@ref(tab:missInfo1) we observe that both *bmi* and *active* stands out from the rest. Furthermore, the missing data for *bmi* and *active* accounts for more than 50% of the variation in the parameter. This might has to do with bmi being a derived variable. Later in this document we will try to fix this problem.
+
+```{r missInfo, results='hold'}
+tabMiss1 <- data.frame(
+  terms1 <- terms1,
+  riv1 <- riv1,
+  lambda1 <- lambda1,
+  fmi1 <- fmi1
+)
+
+kbl(tabMiss1, caption = "Missing information in Imputed Data",
+    booktabs = T,
+    col.names = c("", "riv", "lambda", "fmi")
+    ) %>% 
+    kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+
+### Improving the Imputations{#improveImp}
+
+The non-convergence of the imputations for the variables weight, height, and bmi is a structural problem, as bmi is a product of weight and height. This deterministic function is not accounted for in the current imputation model. To account for this function, we will create a new model based on a 'passive imputation' approach. Before we start the next imputations, we specify the relationship between weight, height, and bmi. Then, we alter the predictor matrix, so that the transformed variable is not used as a predictor. As a result, bmi will be predicted based on a function of the already completed variables weight and height.
+
+
+## Passive Imputations{#passiveImp}
+
+For the improved imputations we use the technique passive imputation, as described above. After further examination, we decided to predict weight based on a function of bmi and height, as there are more missing values for weight than bmi. To  account for this relation, we specify the relation $meth_{weight} = bmi * (\frac{height}{100})^2$', and apply this to our imputations. Then, we specify the predictors for height, weight, and bmi. With the setting '0', we ensure that the transformed variables are not being used as predictors for their non-transformed forms. This predictor setting is specified in a variable and will also be applied to the imputation model. The iterations and imputations will remain the same as the previous imputation model.
+
+```{r}
+pred <- mice(data0, maxit = 0)$predictorMatrix
+
+meth <- mice(data0, maxit = 0)$method
+
+meth["weight"] <- "~ I(bmi * (height / 100)^2)"
+
+pred[c("height", "bmi"), "weight"] <- 0
+```
+
+```{r}
+imp1 <- mice(data0, 
+            m = 5, 
+            maxit =  15,
+            predictorMatrix = pred,
+            method = meth,
+            seed = 26011994,
+            print = FALSE)
+```
+
+### Evaluating Passive Imputations{#evalPasImp}
+
+As can be seen in the trace plots in Figure \@ref(fig:convergence1), the imputations, represented as lines, now intermingle for all predictors. This was not the case for the default imputations as shown in figure \@ref(fig:convergence). Now the lines are also horizontal which is what we like to see. The improved convergence suggests that there is more information for a solution.
+
+```{r convergence1, out.width = "40%", fig.cap="Trace plots of the imputations with Passive Imputation", fig.align='center', fig.show='hold'}
+plot(imp1)
+```
+
+Also the density plots in Figure \@ref(fig:density1) show nice outputs as excpected after the trace plots. As mentioned before, the density plots visualize the variability of the imputed values. The imputed values are again plausible.
+
+
+```{r density1, out.width="50%", fig.align='center', fig.cap="Density plots of the imputations with Passive Imputation"}
+densityplot(imp1)
+```
+
+
+\newpage
+The strip plots and boxplots for active, are shown in Figure \@ref(fig:stripplot2) and Figure \@ref(fig:boxplot2). Both figures look much like the default imputation. However this time, these plots now add value since the trace plots are acceptable. The imputations in the strip plots and boxplots show just a little bit more variability for example in *bmi* than for the default imputations. The imputations are again in line with the observed data. We consider the passive imputations as sensible.
+
+```{r stripplot2, fig.cap="Strip plots of the imputed values with Passive Imputation", out.width="50%",  fig.align='center', fig.ncol = 2, fig.subcap=c('Active', 'Height', 'Weight', 'Bmi')  }
+strip2Active <- stripplot(imp1, active)
+strip2Height <- stripplot(imp1, height)
+strip2Weight <- stripplot(imp1, weight)
+strip2Bmi <- stripplot(imp1, bmi)
+
+strip2Active
+strip2Height
+strip2Weight
+strip2Bmi
+```
+\newpage
+```{r boxplot2, fig.cap="Boxplots of the imputed values with Passive Imputation", out.width="50%", fig.align='center',  fig.ncol = 2, fig.subcap=c('Active', 'Height', 'Weight', 'Bmi')}
+box2Active <- bwplot(imp1, active)
+box2Height <- bwplot(imp1, height)
+box2Weight <- bwplot(imp1, weight)
+box2Bmi <- bwplot(imp1, bmi)
+
+box2Active
+box2Height
+box2Weight
+box2Bmi
+```
+
+
+```{r}
+fitImp1 <- with(imp1, lm(active ~ age + bmi*sex + smoke))
+est1 <- pool(fitImp1)
+
+estImp1 <- summary(est1)
+
+
+coef4 <- round(estImp1$estimate, 3)
+SE4 <- round(estImp1$std.error, 2)
+pVal4 <- round(estImp1$p.value, 3)
+
+riv2 <- round(est1$pooled$riv, 3)
+lambda2 <- round(est1$pooled$lambda, 3)
+fmi2 <- round(est1$pooled$fmi, 3)
+
+terms2 <- est1$pooled$term
+```
+
+
+
+```{r}
+tabImp2 <- data.frame(
+  coefObs <-  coef1,
+  seObs <- SE1,
+  pObs <- pVal1,
+  coefImp <- coef3,
+  seImp <- SE3,
+  pImp <- pVal3, 
+  coefImp1 <- coef4,
+  seImp1 <- SE4,
+  pImp1 <- pVal4,
+  coefTrue <- coef2,
+  seTrue <- SE2,
+  pTrue <- pVal2)
+
+```
+
+### Regressions with Passive Imputations {#regPasImp}
+
+In Table \@ref(tab:regImp2) present an extended regression analysis of \@ref(tab:regImp1), described in Section [5.1.2](#regImputed), by adding the results of the passive imputations. When we compare the results of the `Default Imputations` with the `Passive Imputations`, the coefficients, the standard errors and the p values for all predictors, but *smokeyes* are more precise in the `Passive Imputations` compared to the `Default Imputations`. However, compared to the `Observed Data`, only the coefficients, standard error and p value of *bmi* seems to have improved by using passive imputation.     
+\newpage
+
+
+```{r regImp2, results='hold'}
+
+kbl(tabImp2, caption = "Regression analysis of the Observed(N=155), Imputed(N=306) and True data(N=306)",
+    booktabs = T,
+    col.names = c("b", "SE", "p",
+                 "b", "SE", "p",
+                 "b", "SE", "p",
+                 "b", "SE", "p")
+    ) %>% 
+  add_header_above(c("", "Observed Data" = 3, "Default Imputation" = 3, "Passive Imputation"=3, "True Data" = 3)) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "scale_down")
+```
+
+### Evaluating the Fraction of Missing Data {#fracMissImp2}
+
+Table \@ref(tab:missInfo1) gives us the Fraction of missing information for both the outcomes of the default imputations as the passive imputations. Where we saw high outcomes of *riv*, *lambda*, and *fmi* for *bmi* and *active* with the default imputations, these values drastically decreased after using passive imputation. However, these imputations resulted in substantially higher outcomes of *riv*, *lambda* and *fmi* for *sex*, *smoke* and the interaction of *bmi* and *sex*. These increased values give us the indication that we have to improve the passive imputation. 
+
+```{r missInfo1, results='hold'}
+tabMiss2 <- data.frame(
+  terms1 <- terms1,
+  riv1 <- riv1,
+  lambda1 <- lambda1,
+  fmi1 <- fmi1,
+  riv2,
+  lambda2,
+  fmi2
+)
+
+kbl(tabMiss2, caption = "Missing information in Imputed Data",
+    booktabs = T,
+    col.names = c("", "riv", "lambda", "fmi", "riv", "lambda", "fmi")
+    ) %>% 
+  add_header_above(c("", "Default Imputation" = 3, "Passive Imputation" = 3)) %>% 
+    kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+### Improving the Imputations {#imprImp2}
+ 
+After analyzing the regression model with passive imputations, we conclude that there’s quite the room for improvement. For instance, the predictors *smoke*, *sex* and the interaction of *bmi* and *sex* still need a lot of improvement with regard to making accurate inferences out of them. Also, when evaluating the information about the measures of missing values for the passive imputation, we observe values for riv, lambda, and fmi that are to high for the same predictors. Thus, further on this document we will try to finalize these improvements.
+
+## Final Imputations {#FinImp}
+
+
+
+```{r}
+dataL <- readRDS("incomplete_data_g1.rds")
+dataL["weight"] <- I(data0$bmi * (data0$height / 100)^2)
+```
+
+
+```{r}
+sex <- as.numeric(data0$sex) - 1
+bmi <- dataL$bmi
+bmiSex <- sex * bmi
+dataL["bmiSex"] <- bmiSex
+```
+
+
+```{r}
+predL <- quickpred(dataL)
+methL <- make.method(dataL)
+
+methL["weight"] <- "~ I(bmi  * (height / 100)^2)"
+methL["bmiSex"] <- "~ I(bmi*sex)"
+
+predL[c("bmi", "bmiSex", "height"), "weight"] <- 0
+predL[c("bmiSex", "sex", "bmi"), c("bmiSex", "sex", "bmi")] <- 0
+#predL[, "weight"] <- 0
+
+#predL[c("bmi", "bmiSex", "height"), "weight"] <- 0
+#predL[c("bmiSex", "sex", "bmi"), c("bmiSex", "sex", "bmi")] <- 0
+#predL[, "weight"] <- 0
+
+#predL["smoke", ] <- 0
+#predL["smoke", c("intensity", "rest")] <-1
+#predL["active", ] <- 0
+#predL["active", c("age", "intensity", "rest")] <- 1
+
+```
+
+
+```{r}
+impL <- mice(dataL, 
+            predictorMatrix = predL,
+            method = methL,
+            maxit = 20,
+            m= 40,
+            seed = 26011994,
+            print = FALSE)
+```
+
+
+In this section we will improve the imputations by adding the interaction term which we will analyze to answer our research question in the imputation model, which will be elaborated in Section [5.3.1](#InterImp). In Section [5.3.2](#MethImp) we blablabla. Section [5.3.3](#predMat). Section [5.3.4](#ItImp). Section [5.3.5](#regFinImp). Section [5.3.6](#fimFinImp)
+
+### Interaction Term {#InterImp}
+
+The first thing we tried to improve the imputations, was adding the interaction term. [van Buuren, 2018](https://stefvanbuuren.name/fimd/sec-modelform.html) contends that not including the complete-data model variables will bias the results towards zero. Thus, interactions of scientific interest should be included in the imputation model. Therefore we included the interaction of interest (i.e. the interaction of `bmi` and `sex`) in the imputation model. 
+
+### Methods {#MethImp}
+
+Regarding the methods, we use the same methods as described in Section [5.1](#defImp) (i.e. `pmm` for the continuous variables and `logreg` for the binary variable), and for weight we use the passive imputation ($weight = I(\frac{weight}{(height/100)^2})$), as described in Section [5.2](#passiveImp). In our new model, however, we have included the interaction variable. Because the interaction variable consists out of both `bmi` and `sex` we decided to passive impute the missings of this interaction variable as well. We use the method $bmi\_sex = I( bmi * sex)$
+
+
+### Predictor Matrix {#predMat}
+
+Next, we slightly adapted the predictor matrix. Where in the passive imputations, we only excluded `weight` as predictor for `bmi` and `height`, for the final imputations we will make some more adaptations. For starters we did use the `quickpred()` function to include variables who exceed the minimum correlation of 0.1. Predictors who failed to exceed the minimum correlation are eliminated. To prevent circularity we made sure that `weight` is not a predictor for `bmi` and `height`. We did the same for the interaction variable. Table \@ref(tab:predImp1) provides the entire predictor matrix we will use for the imputations.
+
+```{r predImp1, results='hold'}
+kbl(predL, caption = "Predictor Matrix of Final Imputations") %>% 
+  kable_classic(full_width = FALSE, html_font = "Cambria" )
+```
+
+
+### Iterations and Imputations {#ItImp}
+
+Because the `
+
+
+
+
+### Regressions with Final Imputations {#regFinImp}
+
+```{r}
+fitL <- with(impL, lm(active ~ age + bmi*sex + smoke))
+estL <- pool(fitL)
+estImpL <- summary(estL)
+```
+
+
+```{r}
+coef5 <- round(estImpL$estimate, 3)
+SE5 <- round(estImpL$std.error, 2)
+pVal5 <- round(estImpL$p.value, 3)
+
+riv3 <- round(estL$pooled$riv, 3)
+lambda3 <- round(estL$pooled$lambda, 3)
+fmi3 <- round(estL$pooled$fmi, 3)
+
+terms3 <- estL$pooled$term
+```
+
+```{r}
+tabImp3 <- data.frame(
+  coefObs <-  coef1,
+  seObs <- SE1,
+  pObs <- pVal1,
+  coefImp <- coef3,
+  seImp <- SE3,
+  pImp <- pVal3, 
+  coefImp1 <- coef4,
+  seImp1 <- SE4,
+  pImp1 <- pVal4,
+  coefImp2 <- coef5,
+  seImp2 <- SE5,
+  pImp2 <- pVal5,
+  coefTrue <- coef2,
+  seTrue <- SE2,
+  pTrue <- pVal2)
+```
+
+```{r regImp3, results='hold'}
+
+kbl(tabImp3, caption = "Regression analysis of the Observed(N=155), Imputed and True data(N=306)",
+    booktabs = T,
+    col.names = c("b", "SE", "p",
+                 "b", "SE", "p",
+                 "b", "SE", "p",
+                 "b", "SE", "p",
+                 "b", "SE", "p")
+    ) %>% 
+  add_header_above(c("", "Observed Data" = 3, "Default Imputation" = 3, "Passive Imputation"=3, "Final Imputation" = 3, "True Data" = 3)) %>% 
+  kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "scale_down")
+```
+
+### Fraction Missing Information of the Final Imputations {#fimFinImp}
+
+```{r missInfo2, results='hold'}
+tabMiss2 <- data.frame(
+  terms1 <- terms1,
+  riv1 <- riv1,
+  lambda1 <- lambda1,
+  fmi1 <- fmi1,
+  riv2,
+  lambda2,
+  fmi2,
+  riv3,
+  lambda3,
+  fmi3
+)
+
+kbl(tabMiss2, caption = "Missing information in Imputed Data",
+    booktabs = T,
+    col.names = c("", "riv", "lambda", "fmi", "riv", "lambda", "fmi",
+                  "riv", "lambda", "fmi")
+    ) %>% 
+  add_header_above(c("", "Default Imputation" = 3, "Passive Imputation" = 3, "Final Imputation" =3)) %>% 
+    kable_classic(full_width = F, html_font = "Cambria") %>% 
+  kable_styling(latex_options = "hold_position")
+```
+
+
+
+# Conclusion
