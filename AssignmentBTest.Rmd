@@ -30,15 +30,14 @@ library(VIM)
 # Introduction{#intro}
 The matter of interest for this assignment will be the impact that incomplete data (**observed data**) have on our inferences compared to the inferences we make with complete data (**true data**). To investigate the effect that missing values have on model inferences, we will build a multiple regression model. 
 
-Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:obsData1) we compare the head of the observed data and the true data. Additionally, in \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices; one for the observed data \@ref(tab:corObs) and the other for the true data \@ref(tab:corTrue). 
+Firstly, we provide descriptive statistics and correlations. In table \@ref(tab:obsData1) we compare the head of the observed data and the true data. Additionally, in \@ref(tab:des) the means and variances are compared. With regard to correlations, we present two correlations matrices; one for the observed data \@ref(tab:corObs), and the other for the true data \@ref(tab:corTrue). 
 
 Secondly, we present our multiple regression model in table \@ref(tab:reg). Our model consists of the outcome variable: *active heart rate* and the predictors: *age* and *smoke*. We also included an interaction effect between *bmi* and *sex*. The first three columns reflect the observed data, whereas the latter reflect the true data.
 
-The research question we try to answer in accordance with our model is: *What influence does a person's age, smoking habits, sex and bmi have on their heart rate during exercise?*
-
 Thirdly, we start by inspecting the missing values. Then, we try to find out where the missing values occur. In \@ref(fig:misspat) we begin by giving a global overview of the missingness. Then, in \@ref(fig:mnar-plot) we compare the distributions for the observed data and the missing values. 
 
-Lastly, we perform t-tests on the variables containing missing values to check the type of missingness, either MNAR, MAR, or MCAR. We also provide plots here to visualize where the missing values occur.
+Next, we perform t-tests on the variables containing missing values to check the type of missingness, either MNAR, MAR, or MCAR. We also provide plots to visualize where the missing values occur. After examination of the missingness and the potential relation between missingness values and other variables, we try to solve the missingness problem with multiple imputation. This will be done using the R-package mice. At first, we use mice’s default settings and examine the results by visualizing the imputed values to check if the imputations are valid. Depending on the outcome, the imputation model will be redefined in order to create plausible imputations. When the outcomes are plausible, we use the data to try and answer the research question: *What influence does a person's age, smoking habits, sex and bmi have on their heart rate during exercise?*
+
 
 ```{r}
 data0 <- readRDS("incomplete_data_g1.rds") # load incomoplete
