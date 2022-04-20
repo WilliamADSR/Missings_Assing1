@@ -64,7 +64,7 @@ pred[, "weight"] <- 0
 
 ```{r}
 
-mincorExample <- quickpred(data0, mincor = 0.2)
+mincorExample <- quickpred(data0)
 pred[c("bmi", "bmiSex", "height"), "weight"] <- 0
 pred[c("bmiSex", "sex", "bmi"), c("bmiSex", "sex", "bmi")] <- 0
 pred[, "weight"] <- 0
@@ -77,7 +77,7 @@ pred["active", c("age", "intensity", "rest")] <- 1
 
 ```{r}
 imp1 <- mice(data0, 
-            predictorMatrix = pred,
+            predictorMatrix = mincorExample,
             method = meth,
             maxit = 20,
             m= 30,
