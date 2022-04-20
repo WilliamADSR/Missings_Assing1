@@ -1,0 +1,115 @@
+---
+title: "AssignmentC"
+author: "Martijn Koster, William Schaafsma, Martijn van Dam, Victor Hovius"
+date: "3/21/2022"
+output: 
+  bookdown::pdf_document2:
+    extra_dependencies: "subfig" 
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, comment = NA, warning = FALSE,
+                      error=FALSE, results='hide',fig.keep='all')
+```
+
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+library(lattice)
+``` 
+
+```{r}
+data0 <- readRDS("incomplete_data_g1.rds") # load incomoplete
+data1 <- readRDS("complete_data.rds")
+```
+
+```{r, include=FALSE}
+library(mice)
+library(naniar)
+library(ggplot2)
+library(ggpubr)
+library(tidySEM)
+library(dplyr)
+library(VIM)
+library(knitr)
+library(kableExtra)
+``` 
+
+```{r}
+data0["weight"] <- I(data0$bmi * (data0$height / 100)^2)
+```
+
+
+```{r}
+sex <- as.numeric(data0$sex) - 1
+bmi <- data0$bmi
+bmiSex <- sex * bmi
+data0["sex1"] <- sex
+data0["bmiSex"] <- bmiSex
+```
+
+
+```{r}
+pred <- make.predictorMatrix(data0)
+meth <- make.method(data0)
+
+meth["weight"] <- "~ I(bmi  * (height / 100)^2)"
+meth["bmiSex"] <- "~ I(bmi*sex1)"
+
+pred[c("bmi", "bmiSex", "height"), "weight"] <- 0
+pred[, "sex1"] <- 0 
+pred[c("bmiSex", "sex", "bmi"), c("bmiSex", "sex", "bmi")] <- 0
+pred[, "weight"] <- 0
+```
+
+```{r}
+
+mincorExample <- quickpred(data0, mincor = 0.2)
+
+pred["smoke", ] <- 0
+pred["smoke", c("intensity", "rest")] <-1
+pred["active", ] <- 0
+pred["active", c("age", "intensity", "rest")] <- 1
+```
+
+
+```{r}
+imp1 <- mice(data0, 
+            predictorMatrix = pred,
+            method = meth,
+            maxit = 20,
+            m= 30,
+            seed = 123,
+            print = FALSE)
+```
+
+```{r}
+xyplot(imp1, 
+        bmi ~ I(bmi*sex1)
+       )
+
+xyplot(imp1,
+       weight ~ I(bmi * (height/100)^2))
+```
+
+```{r}
+fitImp2 <- with(imp1, lm(active ~ age + bmi + sex + smoke + bmi_sex))
+est2 <- pool(fitImp2)
+summary(est2)
+est2
+```
+
+
+```{r}
+test1 <- c(complete(imp2)$active, complete(imp1)$active, data1$active)
+method <- rep(c("norm", "pmm", "true"), each = nrow(data0))
+tvm <- data.frame(t = test1, method = method)
+densityplot( ~test1 | method, data = tvm, nint = 25)
+```
+
+
