@@ -1331,6 +1331,8 @@ densityplot(impL, ~ active)
 
 ### Regressions with Final Imputations {#regFinImp}
 
+Table 20 gives an overview of the results of the regression models for the `observed data`, the `default imputation model`, the `passive imputation model`, the `final imputation model`, and the `true data`. Compared to the passive imputation, the coefficients and standard errors for *active*, *bmi*, *sexfemale*, *smokeyes* and *bmi:sexfemale* are more precise in the `final imputation model` than the `passive imputation model`. The coefficient for *age*, however, is more precise in the `passive imputation model` than the `final imputation model`. Though, this difference is negligible. The p-values have also decreased for the variables *sexfemale*, *smokeyes*, and *bmi:sexfemale* in the final imputation model. However, these variables are still statistically non-significant.
+
 ```{r}
 fitL <- with(impL, lm(active ~ age + bmi*sex + smoke))
 estL <- pool(fitL)
@@ -1413,3 +1415,5 @@ kbl(tabMiss2, caption = "Missing information in Imputed Data",
 
 
 # Conclusion
+
+The results of the linear regression for the final imputation (Table 20 #regImp3) suggest that age has a negative effect on heart rate during exercise; meaning that when age increases, heart rate during exercise decreases. Bmi, however, has a positive effect on heart rate during exercise. Thus, when one’s bmi increases, so does their heart rate during exercise. The factors sex and smoking have no statistically significant effect on heart rate during exercise in our data – nor does the interaction effect between bmi and sex. Interestingly, the variable sex and the bmi-sex interaction are statistically significant in the true data. When making inferences based on the data with the final imputation model,  our claims about sex and the bmi-sex interaction would thus be false. This leads us to making a type II error. 
