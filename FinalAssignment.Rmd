@@ -1296,13 +1296,35 @@ Next, we slightly adapted the predictor matrix. Where in the passive imputations
 
 ```{r predImp1, results='hold'}
 kbl(predL, caption = "Predictor Matrix of Final Imputations") %>% 
-  kable_classic(full_width = FALSE, html_font = "Cambria" )
+  kable_classic(full_width = FALSE, html_font = "Cambria" ) %>% 
+  kable_styling(latex_options = "hold_position")
 ```
 
 
 ### Iterations and Imputations {#ItImp}
 
-Because the `
+Because the fraction of missing information are fairly high in the passive imputations, which indicates a substantial missing data problem. Therefore, we decided to increase the amount of imputations. After using trial and error, doing forty imputations led to a the most precise estimates. 
+Furthermore we decided to increase the number of iterations to twenty to get good convergence. 
+
+
+### Evaluating the Final Imputations {#evaFinImp}
+
+
+As can be seen in the trace plots in Figure \@ref(fig:convergence2), the imputations, represented as lines, intermingle for all predictors. 
+
+```{r convergence2, out.width = "40%", fig.cap="Trace plots of the imputations with Final Imputation", fig.align='center', fig.show='hold'}
+plot(impL)
+```
+
+Also the density plots in Figure \@ref(fig:density2) show nice outputs as expected after the trace plots. As mentioned before, the density plots visualize the variability of the imputed values. The imputed values are again plausible.
+
+
+```{r density2, out.width="50%", fig.align='center', fig.cap="Density plots of the Final Imputations", fig.ncol = 2, fig.subcap=c('Active', 'Height', 'Weight', 'Bmi') }
+densityplot(impL, ~ weight)
+densityplot(impL, ~ height)
+densityplot(impL, ~ bmi)
+densityplot(impL, ~ active)
+```
 
 
 
